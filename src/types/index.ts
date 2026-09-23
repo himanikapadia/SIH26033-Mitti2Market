@@ -153,6 +153,8 @@ export interface LogisticsFleet {
   vehicleNumber: string;
   driverName: string;
   driverPhone: string;
+  driverLicense?: string;
+  driverRating?: number;
   vehicleType: string;
   capacityKg: number;
   currentLoadKg: number;
@@ -161,6 +163,12 @@ export interface LogisticsFleet {
   activeStopIndex: number;
   pickupRunsActive: boolean;
   deliveryStatus: 'NOT_STARTED' | 'PICKUP_STARTED' | 'AT_STOP' | 'ON_THE_WAY' | 'ARRIVING_SOON' | 'ARRIVED_AT_DOORSTEP' | 'DELIVERED';
+  speedKmH?: number;
+  reeferTempC?: number;
+  reeferHumidityPercent?: number;
+  fuelBatteryPercent?: number;
+  estimatedDeliveryTime?: string;
+  currentSegmentName?: string;
 }
 
 export interface ShortageEvent {

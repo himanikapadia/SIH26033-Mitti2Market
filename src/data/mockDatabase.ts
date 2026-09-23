@@ -456,16 +456,24 @@ export const INITIAL_FARMERS: Farmer[] = [
 ];
 
 export const INITIAL_FLEET: LogisticsFleet = {
-  fleetPartner: 'Mitti Logistics',
+  fleetPartner: 'Mitti Logistics Cold-Chain Fleet',
   vehicleNumber: 'GJ-05-AB-1234',
   driverName: 'Arjun Singh',
   driverPhone: '+91 98251 04921',
-  vehicleType: 'Eicher Pro 2049 (Refrigerated)',
+  driverLicense: 'GJ05-2018-004921',
+  driverRating: 4.9,
+  vehicleType: 'Eicher Pro 2049 Refrigerated Reefer',
   capacityKg: 2500,
   currentLoadKg: 0,
   transportFeePerKg: 1.0, // Paid by buyer
   currentLocation: { lat: 21.1702, lng: 72.8311 },
   activeStopIndex: 0,
   pickupRunsActive: false,
-  deliveryStatus: 'NOT_STARTED'
+  deliveryStatus: 'NOT_STARTED',
+  speedKmH: 0,
+  reeferTempC: 17.8,
+  reeferHumidityPercent: 88,
+  fuelBatteryPercent: 84,
+  estimatedDeliveryTime: '06:30 AM',
+  currentSegmentName: 'Standby at Surat APMC Bulk Terminal'
 };

@@ -143,16 +143,63 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [ivrStep, setIvrStep] = useState<number>(0);
 
   const autoDemoTimerRef = useRef<any[]>([]);
+  const truckAnimationTimerRef = useRef<any[]>([]);
+
+  const stopTruckAnimation = () => {
+    truckAnimationTimerRef.current.forEach(clearTimeout);
+    truckAnimationTimerRef.current = [];
+  };
+
+  const animateTruckTo = (
+    targetLoc: { lat: number; lng: number },
+    segmentName: string,
+    onArrived?: () => void,
+    customSpeedMs?: number
+  ) => {
+    stopTruckAnimation();
+
+    const startLoc = { ...fleet.currentLocation };
+    const numSteps = demoSpeed === 'Instant' ? 2 : demoSpeed === 'Fast' ? 10 : 20;
+    const totalDuration = customSpeedMs || (demoSpeed === 'Instant' ? 120 : demoSpeed === 'Fast' ? 800 : 2200);
+    const stepDuration = totalDuration / numSteps;
+
+    for (let i = 1; i <= numSteps; i++) {
+      const t = i / numSteps;
+      const curvature = Math.sin(t * Math.PI) * 0.003;
+      const stepLat = startLoc.lat + (targetLoc.lat - startLoc.lat) * t + curvature;
+      const stepLng = startLoc.lng + (targetLoc.lng - startLoc.lng) * t - curvature * 0.4;
+      const isFinished = i === numSteps;
+
+      const timer = setTimeout(() => {
+        setFleet((prev) => ({
+          ...prev,
+          currentLocation: { lat: stepLat, lng: stepLng },
+          currentSegmentName: isFinished ? 'Arrived at Destination' : segmentName,
+          speedKmH: isFinished ? 0 : 42 + (i % 5),
+          deliveryStatus: isFinished ? 'AT_STOP' : 'PICKUP_STARTED'
+        }));
+
+        if (isFinished && onArrived) {
+          onArrived();
+        }
+      }, i * stepDuration);
+
+      truckAnimationTimerRef.current.push(timer);
+    }
+  };
 
   // Doorstep arrival trigger
   const triggerDoorstepArrival = () => {
+    stopTruckAnimation();
     setIsTransitCountdownActive(false);
     setTransitSecondsRemaining(0);
     setActiveTab('buyer');
     setFleet((prev) => ({
       ...prev,
       deliveryStatus: 'ARRIVED_AT_DOORSTEP',
-      currentLocation: BUYER_LOCATION
+      currentLocation: BUYER_LOCATION,
+      speedKmH: 0,
+      currentSegmentName: 'Docked at Surat APMC Bay 4 Doorstep'
     }));
     setIsDoorstepPendingAcceptance(true);
     sounds.playNotificationChime();
@@ -590,25 +637,31 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const startPickupRun = () => {
     if (pickupStops.length === 0) return;
 
+    stopTruckAnimation();
+    const firstStop = pickupStops[0];
+
     setFleet((prev) => ({
       ...prev,
       pickupRunsActive: true,
       deliveryStatus: 'PICKUP_STARTED',
-      activeStopIndex: 0
+      activeStopIndex: 0,
+      speedKmH: 45,
+      currentSegmentName: `Heading toward Stop 1 (${firstStop.farmerName}, ${firstStop.village})`
     }));
 
     addLog('Perishable crop priority route initiated (Optimized for 4:00 AM freshness).', 'LOGISTICS', 'info');
-    addLog(`Truck GJ-05-AB-1234 departing toward Stop 1 (${pickupStops[0].farmerName}, ${pickupStops[0].village}).`, 'LOGISTICS', 'info');
+    addLog(`Truck GJ-05-AB-1234 departing toward Stop 1 (${firstStop.farmerName}, ${firstStop.village}).`, 'LOGISTICS', 'info');
     addToast('Pickup run started! Truck departing toward Stop 1.', 'info');
 
-    // Set first stop to ARRIVING then ARRIVED
-    setTimeout(() => {
-      arriveAtStop(pickupStops[0].id);
-    }, getDelay(1200));
+    // Smoothly animate truck across realistic coordinates toward Stop 1
+    animateTruckTo(firstStop.location, `Transit to Stop 1 (${firstStop.village})`, () => {
+      arriveAtStop(firstStop.id);
+    });
   };
 
   // 8. Arrive at Stop
   const arriveAtStop = (stopId: string) => {
+    stopTruckAnimation();
     setPickupStops((prev) =>
       prev.map((s) => (s.id === stopId ? { ...s, status: 'ARRIVED' } : s))
     );
@@ -617,7 +670,9 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setFleet((prev) => ({
         ...prev,
         currentLocation: { lat: stop.location.lat, lng: stop.location.lng },
-        deliveryStatus: 'AT_STOP'
+        deliveryStatus: 'AT_STOP',
+        speedKmH: 0,
+        currentSegmentName: `Farm Gate: ${stop.farmerName} (${stop.village})`
       }));
       addLog(`Driver Arjun Singh arrived at Stop ${stop.stopNumber}: ${stop.farmerName} (${stop.village}).`, 'LOGISTICS', 'info');
       addToast(`Driver arrived at ${stop.farmerName}'s farm in ${stop.village}.`, 'info');
@@ -799,19 +854,23 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentLoadKg: prev.currentLoadKg + actualWeight
       }));
 
-      // If next stop exists, move to it; otherwise proceed to 2-minute transit countdown
+      // If next stop exists, move to it; otherwise proceed to transit countdown
       const nextIndex = stopIndex + 1;
       if (nextIndex < updatedStops.length) {
-        setTimeout(() => {
-          const nextStop = updatedStops[nextIndex];
-          setFleet((prev) => ({ ...prev, activeStopIndex: nextIndex, deliveryStatus: 'PICKUP_STARTED' }));
-          addLog(`Departing Stop ${currentStop.stopNumber} → Heading to Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village}).`, 'LOGISTICS', 'info');
-          addToast(`Moving to Stop ${nextIndex + 1}: ${nextStop.farmerName}`, 'info');
+        const nextStop = updatedStops[nextIndex];
+        setFleet((prev) => ({
+          ...prev,
+          activeStopIndex: nextIndex,
+          deliveryStatus: 'PICKUP_STARTED',
+          speedKmH: 42,
+          currentSegmentName: `Heading toward Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village})`
+        }));
+        addLog(`Departing Stop ${currentStop.stopNumber} → Heading to Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village}).`, 'LOGISTICS', 'info');
+        addToast(`Moving to Stop ${nextIndex + 1}: ${nextStop.farmerName}`, 'info');
 
-          setTimeout(() => {
-            arriveAtStop(nextStop.id);
-          }, getDelay(1500));
-        }, getDelay(1000));
+        animateTruckTo(nextStop.location, `Transit to Stop ${nextIndex + 1} (${nextStop.village})`, () => {
+          arriveAtStop(nextStop.id);
+        });
       } else {
         // All stops completed!
         addLog('All farm-gate pickups completed & verified. 70% Escrow release triggered to farmers!', 'ESCROW', 'success');
@@ -821,8 +880,21 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setFleet((prev) => ({
           ...prev,
-          deliveryStatus: 'ON_THE_WAY'
+          deliveryStatus: 'ON_THE_WAY',
+          speedKmH: 52,
+          currentSegmentName: 'Expressway to Surat APMC Doorstep'
         }));
+
+        // Animate truck back toward Surat APMC Hub
+        animateTruckTo({ lat: BUYER_LOCATION.lat, lng: BUYER_LOCATION.lng }, 'Expressway to Surat APMC Doorstep', () => {
+          setFleet((prev) => ({
+            ...prev,
+            currentLocation: { lat: BUYER_LOCATION.lat, lng: BUYER_LOCATION.lng },
+            deliveryStatus: 'ARRIVED_AT_DOORSTEP',
+            speedKmH: 0,
+            currentSegmentName: 'Docked at Surat APMC Bay 4 Doorstep'
+          }));
+        }, 12000);
 
         // Redirect immediately to Buyer Delivery Status & start 30-sec transit countdown
         setActiveTab('buyer');
@@ -837,16 +909,20 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // If quality failed and next stop exists
     const nextIndex = stopIndex + 1;
     if (nextIndex < pickupStops.length) {
-      setTimeout(() => {
-        const nextStop = pickupStops[nextIndex];
-        setFleet((prev) => ({ ...prev, activeStopIndex: nextIndex, deliveryStatus: 'PICKUP_STARTED' }));
-        addLog(`Departing Stop ${currentStop.stopNumber} → Heading to Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village}).`, 'LOGISTICS', 'info');
-        addToast(`Moving to Stop ${nextIndex + 1}: ${nextStop.farmerName}`, 'info');
+      const nextStop = pickupStops[nextIndex];
+      setFleet((prev) => ({
+        ...prev,
+        activeStopIndex: nextIndex,
+        deliveryStatus: 'PICKUP_STARTED',
+        speedKmH: 42,
+        currentSegmentName: `Heading toward Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village})`
+      }));
+      addLog(`Departing Stop ${currentStop.stopNumber} → Heading to Stop ${nextIndex + 1} (${nextStop.farmerName}, ${nextStop.village}).`, 'LOGISTICS', 'info');
+      addToast(`Moving to Stop ${nextIndex + 1}: ${nextStop.farmerName}`, 'info');
 
-        setTimeout(() => {
-          arriveAtStop(nextStop.id);
-        }, getDelay(1500));
-      }, getDelay(1000));
+      animateTruckTo(nextStop.location, `Transit to Stop ${nextIndex + 1} (${nextStop.village})`, () => {
+        arriveAtStop(nextStop.id);
+      });
     } else {
       // All stops completed!
       addLog('All farm-gate pickups completed & verified. 70% Escrow release triggered to farmers!', 'ESCROW', 'success');
@@ -856,14 +932,26 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setFleet((prev) => ({
         ...prev,
-        deliveryStatus: 'ON_THE_WAY'
+        deliveryStatus: 'ON_THE_WAY',
+        speedKmH: 52,
+        currentSegmentName: 'Expressway to Surat APMC Doorstep'
       }));
 
-      // Start 2-minute transit countdown to buyer doorstep
-      setTransitSecondsRemaining(120);
+      animateTruckTo({ lat: BUYER_LOCATION.lat, lng: BUYER_LOCATION.lng }, 'Expressway to Surat APMC Doorstep', () => {
+        setFleet((prev) => ({
+          ...prev,
+          currentLocation: { lat: BUYER_LOCATION.lat, lng: BUYER_LOCATION.lng },
+          deliveryStatus: 'ARRIVED_AT_DOORSTEP',
+          speedKmH: 0,
+          currentSegmentName: 'Docked at Surat APMC Bay 4 Doorstep'
+        }));
+      }, 12000);
+
+      setActiveTab('buyer');
+      setTransitSecondsRemaining(30);
       setIsTransitCountdownActive(true);
-      addLog('Consolidated 1000 kg load in transit to Buyer Facility (Surat APMC). Estimated transit: 2:00 minutes.', 'LOGISTICS', 'info');
-      addToast('All stops collected! Truck en route to buyer. Auto-redirect in 2 mins (or click Fast-Forward).', 'info');
+      addLog('Consolidated 1000 kg load in transit to Buyer Facility (Surat APMC). Estimated transit: 30 seconds.', 'LOGISTICS', 'info');
+      addToast('All stops collected! Redirecting to Buyer Delivery Status (30s highway transit)...', 'info');
     }
   };
 
@@ -1072,7 +1160,8 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 12. Restart Demo (Clean Reset)
   const restartDemo = () => {
-    // Clear running auto-demo timers
+    // Clear running auto-demo timers and truck animations
+    stopTruckAnimation();
     autoDemoTimerRef.current.forEach(clearTimeout);
     autoDemoTimerRef.current = [];
     setIsAutoDemoRunning(false);

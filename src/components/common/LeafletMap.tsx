@@ -22,13 +22,67 @@ const createMarkerIcon = (
   let symbol = '🌾';
   let pulseClass = '';
 
+  if (type === 'truck') {
+    return L.divIcon({
+      className: 'custom-m2m-truck-marker',
+      html: `
+        <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
+          <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+            <div style="
+              position:absolute;
+              width:44px;
+              height:44px;
+              border-radius:50%;
+              background:rgba(217, 119, 6, 0.3);
+              animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+            "></div>
+            <div style="
+              width:36px;
+              height:36px;
+              border-radius:50%;
+              background:#d97706;
+              color:white;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:18px;
+              border:2.5px solid white;
+              box-shadow:0 4px 14px rgba(217, 119, 6, 0.6);
+              position:relative;
+              z-index:2;
+            ">
+              🚚
+            </div>
+          </div>
+          ${
+            label
+              ? `<div style="
+                  background:#0f172a;
+                  color:#fde68a;
+                  font-size:9px;
+                  font-weight:800;
+                  padding:2px 6px;
+                  border-radius:6px;
+                  margin-top:3px;
+                  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+                  border:1px solid #d97706;
+                  white-space:nowrap;
+                  display:flex;
+                  align-items:center;
+                  gap:3px;
+                ">${label}</div>`
+              : ''
+          }
+        </div>
+      `,
+      iconSize: [44, 52],
+      iconAnchor: [22, 26]
+    });
+  }
+
   if (type === 'buyer') {
     color = '#7e22ce'; // purple
     symbol = '🏢';
-  } else if (type === 'truck') {
-    color = '#d97706'; // amber
-    symbol = '🚚';
-    pulseClass = 'animate-bounce';
   } else if (type === 'farmer') {
     switch (status) {
       case 'Accepted':
@@ -166,6 +220,30 @@ export const LeafletMap: React.FC<{
         </div>
       )}
 
+      {/* Professional Fleet Telemetry HUD (Active when truck run is running) */}
+      {fleet && fleet.pickupRunsActive && (
+        <div className="absolute top-4 right-4 z-20 bg-slate-950/90 text-white backdrop-blur-md px-3.5 py-2.5 rounded-2xl text-xs font-bold border border-amber-500/40 shadow-xl space-y-1.5 max-w-[260px] animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-stone-800 pb-1">
+            <span className="flex items-center gap-1.5 text-amber-400 font-extrabold text-[11px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              {fleet.vehicleNumber}
+            </span>
+            <span className="text-[10px] text-stone-400 font-mono">
+              {fleet.speedKmH ? `${fleet.speedKmH} km/h` : 'At Farm Gate'}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-mono text-stone-300">
+            <div>Reefer: <strong className="text-emerald-400">{fleet.reeferTempC || 17.8}°C</strong></div>
+            <div>Humidity: <strong className="text-blue-300">{fleet.reeferHumidityPercent || 88}%</strong></div>
+            <div>Load: <strong className="text-amber-300">{fleet.currentLoadKg}/{fleet.capacityKg} kg</strong></div>
+            <div>Driver: <strong className="text-stone-200">{fleet.driverName?.split(' ')[0]}</strong></div>
+          </div>
+          <div className="text-[9px] text-amber-300/80 font-mono truncate pt-0.5 border-t border-stone-800">
+            {fleet.currentSegmentName || 'Farm Gate Collection Corridor'}
+          </div>
+        </div>
+      )}
+
       <MapContainer
         center={center}
         zoom={zoom}
@@ -266,7 +344,7 @@ export const LeafletMap: React.FC<{
         {fleet && fleet.pickupRunsActive && (
           <Marker
             position={[fleet.currentLocation.lat, fleet.currentLocation.lng]}
-            icon={createMarkerIcon('truck', undefined, `Truck: ${fleet.vehicleNumber}`)}
+            icon={createMarkerIcon('truck', undefined, `${fleet.vehicleNumber} • ${fleet.speedKmH ? `${fleet.speedKmH} km/h` : 'At Stop'}`)}
           >
             <Popup>
               <div className="text-xs p-1">
