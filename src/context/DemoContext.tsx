@@ -105,6 +105,10 @@ interface DemoContextType {
     aiNotes?: string;
   }) => void;
   completeFinalDelivery: () => void;
+  // AI Demand Forecasting
+  forecastPrefill: { cropId: string; quantity: number } | null;
+  applyForecastDemand: (cropId: string, quantity: number) => void;
+
   runFullDemo: () => void;
   restartDemo: () => void;
   dismissToast: (id: string) => void;
@@ -141,6 +145,16 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Keypad simulator states
   const [incomingCallActive, setIncomingCallActive] = useState<boolean>(false);
   const [ivrStep, setIvrStep] = useState<number>(0);
+
+  // AI Demand Forecasting Prefill State
+  const [forecastPrefill, setForecastPrefill] = useState<{ cropId: string; quantity: number } | null>(null);
+
+  const applyForecastDemand = (cropId: string, quantity: number) => {
+    setForecastPrefill({ cropId, quantity });
+    const c = crops.find((item) => item.id === cropId);
+    addLog(`AI Demand Forecast applied: ${quantity} kg ${c?.name || 'Produce'} recommended requisition populated.`, 'MATCH', 'info');
+    addToast(`⚡ AI Forecast applied: ${quantity} kg ${c?.name || 'Produce'} prefilled!`, 'success');
+  };
 
   const autoDemoTimerRef = useRef<any[]>([]);
   const truckAnimationTimerRef = useRef<any[]>([]);
@@ -1194,6 +1208,7 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTransitSecondsRemaining(30);
     setIsTransitCountdownActive(false);
     setIsDoorstepPendingAcceptance(false);
+    setForecastPrefill(null);
     if (transitTimerRef.current) clearTimeout(transitTimerRef.current);
 
     addToast('Demo reset to initial state. No active demand.', 'info');
@@ -1230,6 +1245,8 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIncomingCallActive,
         ivrStep,
         setIvrStep,
+        forecastPrefill,
+        applyForecastDemand,
         postDemand,
         farmerAccept,
         farmerReject,

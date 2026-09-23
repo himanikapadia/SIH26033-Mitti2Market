@@ -3,6 +3,7 @@ import { useDemo } from '../../context/DemoContext';
 import { LeafletMap } from '../common/LeafletMap';
 import { TransportAllocation } from './TransportAllocation';
 import { QualityCheckStation } from './QualityCheckStation';
+import { AIRouteOptimization } from './AIRouteOptimization';
 import {
   Truck,
   CheckCircle2,
@@ -280,6 +281,9 @@ export const LogisticsPortal: React.FC = () => {
                   zoom={10}
                 />
               </div>
+
+              {/* AI Route Optimization CVRP Engine */}
+              <AIRouteOptimization />
 
               {/* Stops Checklist & Progression */}
               <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-xs space-y-4">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { DemandBuilder } from './DemandBuilder';
+import { AIDemandForecasting } from './AIDemandForecasting';
 import { PoolStatus } from './PoolStatus';
 import { ConsolidatedInvoice } from './ConsolidatedInvoice';
 import { MatchingEngineLog } from './MatchingEngineLog';
@@ -18,6 +19,9 @@ export const BuyerPortal: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Main Area: 8 Columns */}
         <div className="lg:col-span-8 space-y-8">
+          {/* AI Demand Forecasting & Predictive Market Intelligence */}
+          <AIDemandForecasting />
+
           {/* Demand Creation Builder */}
           <DemandBuilder />
 

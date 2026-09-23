@@ -15,12 +15,20 @@ import {
 } from 'lucide-react';
 
 export const DemandBuilder: React.FC = () => {
-  const { crops, postDemand, isMatchingActive, activeDemand } = useDemo();
+  const { crops, postDemand, isMatchingActive, activeDemand, forecastPrefill } = useDemo();
 
   // Multi-crop selection state
   const [selectedCrops, setSelectedCrops] = useState<{ cropId: string; quantity: number }[]>([
     { cropId: 'crop-tomato', quantity: 1000 }
   ]);
+
+  // Sync when AI forecast prefill is clicked
+  React.useEffect(() => {
+    if (forecastPrefill) {
+      setSelectedCrops([{ cropId: forecastPrefill.cropId, quantity: forecastPrefill.quantity }]);
+    }
+  }, [forecastPrefill]);
+
   const [acceptExtra10, setAcceptExtra10] = useState<boolean>(true);
   const [pickupWindow, setPickupWindow] = useState<string>('4:00 AM – 5:00 AM');
   const [deliveryRequiredBy, setDeliveryRequiredBy] = useState<string>('7:00 AM');

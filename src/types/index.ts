@@ -200,3 +200,42 @@ export interface NotificationToast {
   severity: 'info' | 'success' | 'warning' | 'error';
   timestamp: string;
 }
+
+export interface DemandForecastPoint {
+  day: string;
+  date: string;
+  predictedDemandKg: number;
+  predictedPrice: number;
+  confidencePercent: number;
+  supplyStatus: 'Surplus' | 'Balanced' | 'Shortage Risk';
+}
+
+export interface CropForecastData {
+  cropId: string;
+  cropName: string;
+  currentPrice: number;
+  predictedNextWeekPrice: number;
+  priceTrendPercent: number;
+  recommendedPurchaseWindow: string;
+  recommendedBatchKg: number;
+  modelConfidence: number;
+  weeklyTrend: DemandForecastPoint[];
+  aiInsight: string;
+  clusterSupplySummary: string;
+}
+
+export interface RouteOptimizationData {
+  unoptimizedDistanceKm: number;
+  unoptimizedDurationMinutes: number;
+  unoptimizedCarbonKg: number;
+  unoptimizedPerishRisk: string;
+  optimizedDistanceKm: number;
+  optimizedDurationMinutes: number;
+  optimizedCarbonKg: number;
+  optimizedPerishRisk: string;
+  distanceSavedPercent: number;
+  timeSavedPercent: number;
+  carbonSavedPercent: number;
+  algorithmName: string;
+}
+
