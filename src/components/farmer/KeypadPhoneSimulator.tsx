@@ -177,24 +177,39 @@ export const KeypadPhoneSimulator: React.FC = () => {
                 </div>
               </div>
             ) : farmer.status === 'Accepted' ? (
-              <div className="space-y-1">
-                <div className="font-extrabold text-sm">
-                  {isGujarati ? '✓ ભાવ પ્રસ્તાવ સ્વીકૃત' : '✓ खरीद भाव स्वीकृत'}
+              <div className="space-y-1.5 p-2 bg-[#8da076] rounded-xl border border-[#6b7b58] animate-in fade-in">
+                <div className="font-extrabold text-sm flex items-center justify-center gap-1 text-[#15230c]">
+                  <span>✓</span>
+                  <span>{isGujarati ? 'ભાવ પ્રસ્તાવ સ્વીકૃત' : 'खरीद भाव स्वीकृत'}</span>
                 </div>
-                <div className="text-[11px]">
-                  {isGujarati ? 'સવારે ૪:૦૦ વાગ્યે વાહન આવશે.' : 'सुबह ४:०० बजे वाहन आगमन निर्धारित।'}
+                <div className="text-[11px] font-bold text-[#1e2a14]">
+                  {isGujarati
+                    ? `જથ્થો: ${allocatedQty} કિલો • ભાવ: ₹${farmer.offeredRate}/કિલો`
+                    : `मात्रा: ${allocatedQty} किग्रा • भाव: ₹${farmer.offeredRate}/किग्रा`}
                 </div>
-                <div className="text-[10px]">
-                  {isGujarati ? '૭૦% અનામત રકમ જમા છે.' : '७०% अग्रिम राशि सुरक्षित रखी गई है।'}
+                <div className="text-[10px] text-[#2c3d1b] leading-tight">
+                  {isGujarati
+                    ? 'સવારે ૪:૦૦ વાગ્યે વાહન આપના ખેતરે આવશે. ૭૦% રકમ અનામત ખાતામાં સુરક્ષિત છે.'
+                    : 'सुबह ४:०० बजे वाहन आपके खेत पर पहुंचेगा। ७०% अग्रिम राशि सुरक्षित रखी गई है।'}
+                </div>
+                <div className="pt-1 border-t border-[#788864] flex items-center justify-between text-[9px] font-bold text-emerald-950">
+                  <span>{isGujarati ? 'ઓર્ડર સમન્વય પૂર્ણ' : 'आदेश समेकन पूर्ण'}</span>
+                  <span>[૧૦૦% નિશ્ચિત]</span>
                 </div>
               </div>
             ) : farmer.status === 'Rejected' ? (
-              <div className="space-y-1">
-                <div className="font-extrabold text-sm">
-                  {isGujarati ? '✕ કૉલ સમાપ્ત' : '✕ कॉल समाप्त'}
+              <div className="space-y-1.5 p-2 bg-[#b5a38a] rounded-xl border border-[#8a7761] text-[#331c12] animate-in fade-in">
+                <div className="font-extrabold text-sm flex items-center justify-center gap-1 text-rose-950">
+                  <span>✕</span>
+                  <span>{isGujarati ? 'પ્રસ્તાવ અસ્વીકૃત' : 'प्रस्ताव अस्वीकृत'}</span>
                 </div>
-                <div className="text-[11px]">
-                  {isGujarati ? 'પ્રસ્તાવ અસ્વીકૃત. અનામત ખેડૂતને સોંપાયેલ.' : 'प्रस्ताव अस्वीकृत। वैकल्पिक किसान को आवंटित।'}
+                <div className="text-[10px] leading-tight font-semibold">
+                  {isGujarati
+                    ? 'આપે આ ભાવ નકાર્યો છે. સિસ્ટમે અનામત ખેડૂતને આ જથ્થો સોંપી દીધો છે.'
+                    : 'आपने यह भाव अस्वीकार किया। सिस्टम ने वैकल्पिक किसान को मांग आवंटित कर दी है।'}
+                </div>
+                <div className="pt-1 border-t border-[#8a7761]/60 text-[9px] font-bold">
+                  {isGujarati ? 'કૉલ સમાપ્ત • સ્ટેન્ડબાય સક્રિય' : 'कॉल समाप्त • स्टैंडबाय सक्रिय'}
                 </div>
               </div>
             ) : callState === 'RINGING' ? (
@@ -250,22 +265,33 @@ export const KeypadPhoneSimulator: React.FC = () => {
           </div>
         </div>
 
-        {/* Answer / Hangup Physical Call Buttons */}
-        <div className="w-full flex justify-between items-center px-4 pt-1">
+        {/* Answer / Hangup / D-Pad Control Key Bar */}
+        <div className="w-full grid grid-cols-3 gap-2 px-3 pt-1 items-center">
+          {/* Green Call Button */}
           <button
             onClick={handleAnswerCall}
             disabled={callState === 'IN_CALL' || farmer.status !== 'Pending'}
-            className="w-16 h-10 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white flex flex-col items-center justify-center shadow-md cursor-pointer transition disabled:opacity-50"
-            title={isGujarati ? 'કૉલ ઉપાડો' : 'कॉल उठाएं'}
+            className="h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white flex flex-col items-center justify-center shadow-lg border border-emerald-400 cursor-pointer transition disabled:opacity-40"
+            title="Answer Call (हरा बटन)"
           >
             <PhoneCall className="w-4 h-4" />
-            <span className="text-[8px] font-bold mt-0.5">{isGujarati ? 'ઉપાડો' : 'उठाएं'}</span>
+            <span className="text-[9px] font-bold mt-0.5 tracking-wider font-mono">CALL</span>
           </button>
 
-          <div className="w-9 h-9 rounded-full bg-stone-700 border-2 border-stone-600 flex items-center justify-center text-[10px] font-bold font-mono">
-            {isGujarati ? 'હા' : 'हाँ'}
+          {/* Center Navi / OK D-Pad */}
+          <div className="h-11 rounded-xl bg-stone-800 border-2 border-stone-600 flex items-center justify-center shadow-inner">
+            <button
+              onClick={() => {
+                if (callState === 'RINGING') handleAnswerCall();
+                else if (callState === 'IN_CALL') handlePressKey('1');
+              }}
+              className="w-8 h-8 rounded-lg bg-stone-700 hover:bg-stone-600 active:scale-95 border border-stone-500 flex items-center justify-center text-[10px] font-extrabold text-stone-200 cursor-pointer shadow-xs"
+            >
+              OK
+            </button>
           </div>
 
+          {/* Red End / Power Button */}
           <button
             onClick={() => {
               if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -274,54 +300,56 @@ export const KeypadPhoneSimulator: React.FC = () => {
               setCallState('ENDED');
               farmerReject(farmer.id, isGujarati ? 'કૉલ સમાપ્ત કરી નકારવામાં આવ્યો' : 'कॉल काटकर प्रस्ताव अस्वीकृत किया गया');
             }}
-            className="w-16 h-10 rounded-2xl bg-rose-700 hover:bg-rose-600 text-white flex flex-col items-center justify-center shadow-md cursor-pointer transition"
-            title={isGujarati ? 'કૉલ કાપો' : 'कॉल काटें'}
+            className="h-11 rounded-xl bg-rose-700 hover:bg-rose-600 active:scale-95 text-white flex flex-col items-center justify-center shadow-lg border border-rose-500 cursor-pointer transition"
+            title="End Call / Reject (लाल बटन)"
           >
             <PhoneOff className="w-4 h-4" />
-            <span className="text-[8px] font-bold mt-0.5">{isGujarati ? 'કાપો' : 'काटें'}</span>
+            <span className="text-[9px] font-bold mt-0.5 tracking-wider font-mono">END</span>
           </button>
         </div>
 
-        {/* Physical 3x4 Numeric Keypad with Pure Vernacular Labels */}
+        {/* Standard Physical 3x4 Alphanumeric Keypad */}
         <div className="w-full grid grid-cols-3 gap-2 px-3 pb-2 font-mono">
           {[
-            { num: '1', devanagari: isGujarati ? '૧' : '१', sub: isGujarati ? 'સ્વીકાર' : 'स्वीकार', isAction: true },
-            { num: '2', devanagari: isGujarati ? '૨' : '२', sub: isGujarati ? 'અસ્વીકાર' : 'अस्वीकार', isAction: true },
-            { num: '3', devanagari: isGujarati ? '૩' : '३', sub: isGujarati ? 'નવો ભાવ' : 'नया भाव', isAction: true },
-            { num: '4', devanagari: isGujarati ? '૪' : '४', sub: isGujarati ? 'કખગ' : 'कखग' },
-            { num: '5', devanagari: isGujarati ? '૫' : '५', sub: isGujarati ? 'ચછજ' : 'चछज' },
-            { num: '6', devanagari: isGujarati ? '૬' : '६', sub: isGujarati ? 'ટઠડ' : 'टठड' },
-            { num: '7', devanagari: isGujarati ? '૭' : '७', sub: isGujarati ? 'તથદ' : 'तथद' },
-            { num: '8', devanagari: isGujarati ? '૮' : '८', sub: isGujarati ? 'પફબ' : 'पफब' },
-            { num: '9', devanagari: isGujarati ? '૯' : '९', sub: isGujarati ? 'યરલ' : 'यरल' },
-            { num: '*', devanagari: '*', sub: ' ' },
-            { num: '0', devanagari: isGujarati ? '૦' : '०', sub: '+' },
-            { num: '#', devanagari: '#', sub: ' ' }
-          ].map((key) => (
-            <button
-              key={key.num}
-              onClick={() => handlePressKey(key.num)}
-              className={`py-2 px-1 rounded-xl bg-stone-800 hover:bg-stone-700 active:scale-95 text-stone-200 border border-stone-700 shadow-sm flex flex-col items-center justify-center transition cursor-pointer ${
-                activeKey === key.num ? 'bg-amber-600 text-white ring-2 ring-amber-400' : ''
-              } ${
-                key.num === '1' && callState === 'IN_CALL'
-                  ? 'border-emerald-500/80 animate-pulse text-emerald-300 font-extrabold'
-                  : ''
-              }`}
-            >
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-extrabold leading-none">{key.devanagari}</span>
-                <span className="text-[10px] text-stone-400 font-normal">({key.num})</span>
-              </div>
-              <span className={`text-[8px] font-bold mt-0.5 ${key.isAction ? 'text-amber-300 font-extrabold' : 'text-stone-400'}`}>
-                {key.sub}
-              </span>
-            </button>
-          ))}
+            { num: '1', letters: '.,@', isIvrChoice: true },
+            { num: '2', letters: 'abc', isIvrChoice: true },
+            { num: '3', letters: 'def', isIvrChoice: true },
+            { num: '4', letters: 'ghi' },
+            { num: '5', letters: 'jkl' },
+            { num: '6', letters: 'mno' },
+            { num: '7', letters: 'pqrs' },
+            { num: '8', letters: 'tuv' },
+            { num: '9', letters: 'wxyz' },
+            { num: '*', letters: '+' },
+            { num: '0', letters: '␣' },
+            { num: '#', letters: '⇧' }
+          ].map((key) => {
+            const isHighlighted = callState === 'IN_CALL' && key.isIvrChoice;
+
+            return (
+              <button
+                key={key.num}
+                onClick={() => handlePressKey(key.num)}
+                className={`py-2 px-1 rounded-xl bg-stone-800 hover:bg-stone-700 active:scale-95 text-stone-200 border border-stone-600/80 shadow-md flex flex-col items-center justify-center transition cursor-pointer ${
+                  activeKey === key.num ? 'bg-amber-600 text-white ring-2 ring-amber-400' : ''
+                } ${
+                  isHighlighted ? 'border-amber-400 ring-2 ring-amber-400/40 text-amber-200' : ''
+                }`}
+              >
+                <span className="text-base font-extrabold leading-none text-white">
+                  {key.num}
+                </span>
+                <span className="text-[8px] text-stone-400 uppercase tracking-widest mt-0.5">
+                  {key.letters}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="text-[10px] text-stone-400 font-mono tracking-wider">
-          {isGujarati ? 'મિટ્ટી ટુ માર્કેટ • ગ્રામીણ કૉલ' : 'मिट्टी टू मार्केट • ग्रामीण आईवीआर'}
+        {/* Bottom Feature Phone Brand Tag */}
+        <div className="text-[9px] text-stone-400 font-mono tracking-widest uppercase">
+          Mitti2Market • Rural IVR Telecom Terminal
         </div>
       </div>
     </div>

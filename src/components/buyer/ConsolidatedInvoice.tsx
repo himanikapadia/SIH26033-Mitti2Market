@@ -3,16 +3,47 @@ import { useDemo } from '../../context/DemoContext';
 import { FileText, Lock, CheckCircle, Truck, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
 
 export const ConsolidatedInvoice: React.FC = () => {
-  const { consolidatedInvoice, confirmOrderAndLockEscrow, setActiveTab } = useDemo();
+  const { consolidatedInvoice, confirmOrderAndLockEscrow, setActiveTab, activeDemand, poolContributors } = useDemo();
 
   if (!consolidatedInvoice) {
+    const targetKg = activeDemand?.targetTotalKg || 1000;
+    const acceptedKg = poolContributors
+      .filter((c) => c.status === 'Accepted')
+      .reduce((sum, c) => sum + c.allocatedQty, 0);
+    const progressPercent = Math.min(100, Math.round((acceptedKg / targetKg) * 100));
+
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-8 shadow-xs text-center text-xs space-y-2">
-        <FileText className="w-8 h-8 mx-auto text-stone-300" />
-        <h4 className="font-bold text-slate-700 text-sm">Consolidated Invoice</h4>
-        <p className="text-stone-400">
-          Waiting for pool confirmation (requires 100% farmer acceptance) to generate consolidated invoice...
-        </p>
+      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-stone-100 text-stone-500">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-extrabold text-slate-900 text-sm">
+                Consolidated B2B Order & Invoice (70% Escrow)
+              </h4>
+              <p className="text-xs text-stone-500">
+                Single unified billing for all aggregated smallholders
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 w-fit">
+            <Lock className="w-3 h-3 text-amber-600" />
+            Unlocks at 100% Pool ({progressPercent}% Confirmed)
+          </span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 text-xs text-stone-600 space-y-2">
+          <p className="leading-relaxed">
+            The consolidated invoice aggregates multiple small farmers into <strong>one single B2B invoice</strong> with escrow protection.
+            Currently, <strong>{acceptedKg} of {targetKg} kg</strong> has been confirmed.
+          </p>
+          <div className="flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span>Accept remaining farmers in the Pool Table above (or via the Farmer phone simulator) to instantly unlock this invoice.</span>
+          </div>
+        </div>
       </div>
     );
   }

@@ -143,11 +143,26 @@ export const LeafletMap: React.FC<{
 
   return (
     <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-stone-200 shadow-inner relative">
-      {/* Radar scanning banner overlay */}
+      {/* Impressive Professional Radar Scanning HUD Overlay */}
       {isMatchingActive && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-stone-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-emerald-500/50 shadow-xl animate-pulse">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>{radarScanningLabel || 'Scanning nearby farmer supply...'}</span>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-slate-900/95 text-white backdrop-blur-md px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-3 border border-emerald-500/40 shadow-2xl animate-in fade-in">
+          <div className="relative flex items-center justify-center w-5 h-5">
+            <span className="absolute w-5 h-5 rounded-full bg-emerald-500/30 animate-ping" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-extrabold">
+                Geospatial Radar Discovery Active
+              </span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">
+                25 km Scan
+              </span>
+            </div>
+            <span className="text-slate-200 text-xs font-semibold">
+              {radarScanningLabel || 'Aggregating fragmented smallholder lots...'}
+            </span>
+          </div>
         </div>
       )}
 
@@ -164,18 +179,23 @@ export const LeafletMap: React.FC<{
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Radar concentric scanning circles around buyer center */}
+        {/* Professional Radar Concentric Scanning Circles around APMC Hub */}
         {isMatchingActive && (
           <>
             <Circle
               center={center}
-              radius={8000}
-              pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.15, weight: 2 }}
+              radius={6000}
+              pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.12, weight: 2 }}
             />
             <Circle
               center={center}
-              radius={18000}
-              pathOptions={{ color: '#059669', fillColor: '#059669', fillOpacity: 0.08, weight: 1.5, dashArray: '4, 8' }}
+              radius={14000}
+              pathOptions={{ color: '#059669', fillColor: '#059669', fillOpacity: 0.06, weight: 1.5, dashArray: '4, 8' }}
+            />
+            <Circle
+              center={center}
+              radius={24000}
+              pathOptions={{ color: '#047857', fillColor: '#047857', fillOpacity: 0.03, weight: 1, dashArray: '2, 6' }}
             />
           </>
         )}

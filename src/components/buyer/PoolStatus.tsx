@@ -7,6 +7,7 @@ export const PoolStatus: React.FC = () => {
     activeDemand,
     poolContributors,
     farmerAccept,
+    farmerReject,
     setActiveTab,
     setSelectedFarmerId
   } = useDemo();
@@ -26,6 +27,10 @@ export const PoolStatus: React.FC = () => {
     .filter((c) => c.status === 'Accepted')
     .reduce((sum, c) => sum + c.allocatedQty, 0);
 
+  const pendingKg = poolContributors
+    .filter((c) => c.status === 'Pending')
+    .reduce((sum, c) => sum + c.allocatedQty, 0);
+
   const progressPercent = Math.min(100, Math.round((acceptedKg / targetKg) * 100));
 
   const handleJumpToFarmer = (farmerId: string) => {
@@ -35,17 +40,60 @@ export const PoolStatus: React.FC = () => {
 
   return (
     <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-6">
-      {/* Pool Header & Progress Bar */}
-      <div className="space-y-3">
+      {/* Top 4 KPI Metrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+            Target Demand
+          </div>
+          <div className="text-lg font-mono font-extrabold text-slate-900 mt-0.5">
+            {targetKg.toLocaleString('en-IN')} kg
+          </div>
+          <div className="text-[10px] text-stone-500 font-medium">100% Consolidated</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+            Confirmed Supply
+          </div>
+          <div className="text-lg font-mono font-extrabold text-emerald-800 mt-0.5">
+            {acceptedKg.toLocaleString('en-IN')} kg
+          </div>
+          <div className="text-[10px] text-emerald-700 font-semibold">{progressPercent}% of target</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+            Pending Consent
+          </div>
+          <div className="text-lg font-mono font-extrabold text-amber-800 mt-0.5">
+            {pendingKg.toLocaleString('en-IN')} kg
+          </div>
+          <div className="text-[10px] text-amber-700 font-medium">Awaiting SMS/IVR</div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-purple-700">
+            Pooling Impact
+          </div>
+          <div className="text-lg font-mono font-extrabold text-purple-800 mt-0.5">
+            {poolContributors.length} Farms ➔ 1 Truck
+          </div>
+          <div className="text-[10px] text-purple-700 font-medium">Zero Intermediaries</div>
+        </div>
+      </div>
+
+      {/* Visually Satisfying Segmented Progress Bar */}
+      <div className="space-y-3 p-4 rounded-2xl bg-stone-50/80 border border-stone-200">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-stone-400">
               Demand-First Supply Aggregation
             </span>
-            <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-              <span>POOL STATUS:</span>
+            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <span>Pool Progress:</span>
               <span className="font-mono text-emerald-700">
-                {acceptedKg} of {targetKg} kg confirmed
+                {acceptedKg} / {targetKg} kg confirmed
               </span>
             </h3>
           </div>
@@ -60,22 +108,68 @@ export const PoolStatus: React.FC = () => {
                   : 'bg-yellow-100 text-yellow-800 border-yellow-300'
               }`}
             >
-              {progressPercent === 100 ? '100% POOL FILLED ✓' : `${progressPercent}% FULFILLED`}
+              {progressPercent === 100 ? '100% POOL FILLED ✓ READY FOR INVOICE' : `${progressPercent}% FULFILLED`}
             </span>
           </div>
         </div>
 
-        {/* Dynamic Progress Bar */}
-        <div className="w-full bg-stone-100 h-3.5 rounded-full overflow-hidden p-0.5 border border-stone-200">
-          <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-700 ease-out shadow-xs"
-            style={{ width: `${progressPercent}%` }}
-          />
+        {/* Multi-Segmented Progress Bar */}
+        <div className="w-full bg-stone-200 h-6 rounded-full overflow-hidden p-0.5 border border-stone-300 relative shadow-inner flex">
+          {poolContributors.map((c, i) => {
+            const widthPct = Math.max(2, (c.allocatedQty / targetKg) * 100);
+            let bgClass = 'bg-stone-300';
+            if (c.status === 'Accepted') bgClass = 'bg-gradient-to-r from-emerald-500 to-emerald-600';
+            else if (c.status === 'Pending') bgClass = 'bg-amber-400 animate-pulse';
+            else if (c.status === 'Rejected') bgClass = 'bg-rose-500 opacity-60';
+            else if (c.status === 'Standby') bgClass = 'bg-purple-500';
+
+            return (
+              <div
+                key={i}
+                style={{ width: `${widthPct}%` }}
+                title={`${c.farmerName}: ${c.allocatedQty} kg (${c.status})`}
+                className={`h-full ${bgClass} border-r border-white/40 first:rounded-l-full last:rounded-r-full transition-all duration-500 relative group overflow-hidden flex items-center justify-center text-[10px] font-bold text-white shadow-2xs`}
+              >
+                {/* Shimmer sweep over confirmed segments */}
+                {c.status === 'Accepted' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                )}
+                {widthPct >= 12 && (
+                  <span className="truncate px-1 drop-shadow-xs">{c.allocatedQty}kg</span>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        <div className="flex justify-between text-[11px] text-stone-500 font-mono">
-          <span>0 kg (Initiated)</span>
-          <span>Target: {targetKg} kg</span>
+        {/* Farmer Quota Breakdown Chips below bar */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+          <span className="text-stone-400 font-semibold text-[10px] uppercase">Farmer Shares:</span>
+          {poolContributors.map((c, i) => {
+            const badgeColors = {
+              Accepted: 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold',
+              Pending: 'bg-amber-100 text-amber-800 border-amber-300 font-medium',
+              Rejected: 'bg-rose-100 text-rose-800 border-rose-300 line-through',
+              'Counter Offer': 'bg-blue-100 text-blue-800 border-blue-300',
+              Standby: 'bg-purple-100 text-purple-800 border-purple-300 font-bold',
+              Replaced: 'bg-stone-100 text-stone-500 border-stone-200 line-through',
+              'Quality Failed': 'bg-rose-100 text-rose-900 border-rose-300'
+            };
+
+            return (
+              <span
+                key={i}
+                className={`px-2 py-0.5 rounded-lg border text-[10px] flex items-center gap-1 ${
+                  badgeColors[c.status] || 'bg-stone-100 text-stone-700'
+                }`}
+              >
+                <span>{c.farmerName.split(' ')[0]} ({c.allocatedQty} kg)</span>
+                {c.status === 'Accepted' && <span>✓</span>}
+                {c.status === 'Pending' && <span>⏳</span>}
+                {c.status === 'Rejected' && <span>✕</span>}
+              </span>
+            );
+          })}
         </div>
       </div>
 
@@ -86,7 +180,7 @@ export const PoolStatus: React.FC = () => {
             Farmer Pool Table ({poolContributors.length} Smallholders Aggregated)
           </h4>
           <span className="text-[11px] text-stone-400">
-            Click farmer to simulate their phone response
+            Accept or reject farmer consent directly or simulate phone
           </span>
         </div>
 
@@ -157,10 +251,30 @@ export const PoolStatus: React.FC = () => {
                     <td className="py-3 px-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         {c.status === 'Pending' && (
+                          <>
+                            <button
+                              onClick={() => farmerAccept(c.farmerId)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer shadow-xs transition"
+                              title="Accept this farmer's contribution"
+                            >
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Accept</span>
+                            </button>
+                            <button
+                              onClick={() => farmerReject(c.farmerId, 'Price / volume mismatch')}
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-[10px] cursor-pointer shadow-xs transition"
+                              title="Reject to trigger standby farmer replacement"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              <span>Reject</span>
+                            </button>
+                          </>
+                        )}
+                        {c.status === 'Standby' && (
                           <button
                             onClick={() => farmerAccept(c.farmerId)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer shadow-xs transition"
-                            title="Accept this farmer's contribution"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] cursor-pointer shadow-xs transition"
+                            title="Accept standby farmer into pool"
                           >
                             <CheckCircle2 className="w-3 h-3" />
                             <span>Accept</span>
@@ -171,7 +285,7 @@ export const PoolStatus: React.FC = () => {
                           className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-slate-700 text-[10px] font-semibold cursor-pointer transition"
                           title="Simulate this farmer's device in Farmer Module"
                         >
-                          <span>Simulate</span>
+                          <span>Phone</span>
                           <ArrowUpRight className="w-3 h-3" />
                         </button>
                       </div>
@@ -186,3 +300,4 @@ export const PoolStatus: React.FC = () => {
     </div>
   );
 };
+

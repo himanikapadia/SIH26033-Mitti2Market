@@ -7,11 +7,17 @@ import { KeypadPhoneSimulator } from './KeypadPhoneSimulator';
 import { Smartphone, PhoneCall, Radio, Sparkles } from 'lucide-react';
 
 export const FarmerModule: React.FC = () => {
-  const { farmers, selectedFarmerId } = useDemo();
+  const { farmers, selectedFarmerId, activeDemand, poolContributors } = useDemo();
   const farmer = farmers.find((f) => f.id === selectedFarmerId) || farmers[0];
 
+  const targetKg = activeDemand?.targetTotalKg || 1000;
+  const acceptedKg = poolContributors
+    .filter((c) => c.status === 'Accepted')
+    .reduce((sum, c) => sum + c.allocatedQty, 0);
+  const progressPercent = Math.min(100, Math.round((acceptedKg / targetKg) * 100));
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-200">
       {/* Banner */}
       <div className="bg-gradient-to-r from-emerald-950 via-stone-900 to-emerald-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -34,6 +40,68 @@ export const FarmerModule: React.FC = () => {
           </div>
           <div>Gujarati & Hindi Audio IVR Supported</div>
           <div className="text-[10px] text-stone-400 font-mono">Zero Smartphone Dependency Required</div>
+        </div>
+      </div>
+
+      {/* 4-Step Interactive Storytelling Lifecycle Bar */}
+      <div className="bg-white rounded-3xl border border-stone-200 p-5 shadow-xs space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+              Procurement Lifecycle Storytelling:
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Demand-to-Consolidation
+            </span>
+          </div>
+          <div className="text-xs font-mono font-bold text-emerald-800">
+            Active Pool: {acceptedKg} of {targetKg} kg Confirmed ({progressPercent}%)
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          {/* Step 1 */}
+          <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-stone-400 uppercase">Step 1</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Done ✓</span>
+            </div>
+            <div className="font-extrabold text-slate-900">Buyer Posts Demand</div>
+            <div className="text-[11px] text-stone-500">1,000 kg Tomato requisition posted</div>
+          </div>
+
+          {/* Step 2 */}
+          <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-amber-700 uppercase">Step 2</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
+                Active
+              </span>
+            </div>
+            <div className="font-extrabold text-amber-950">Farmers Receive Alerts</div>
+            <div className="text-[11px] text-amber-800">Push App Alert or Hindi Voice Call (IVR)</div>
+          </div>
+
+          {/* Step 3 */}
+          <div className="p-3 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-blue-700 uppercase">Step 3</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-blue-800">Simulate Below</span>
+            </div>
+            <div className="font-extrabold text-blue-950">Farmer Consent Decision</div>
+            <div className="text-[11px] text-blue-800">Press Accept / Reject / Counter on Device</div>
+          </div>
+
+          {/* Step 4 */}
+          <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-emerald-700 uppercase">Step 4</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Real-Time</span>
+            </div>
+            <div className="font-extrabold text-emerald-950">Buyer Pool Updates</div>
+            <div className="text-[11px] text-emerald-800">Order consolidates into unified B2B invoice</div>
+          </div>
         </div>
       </div>
 

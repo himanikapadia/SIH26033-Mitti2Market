@@ -53,22 +53,32 @@ export const SmartphoneSimulator: React.FC = () => {
 
   return (
     <div className="flex justify-center p-2">
-      {/* Smartphone Frame */}
-      <div className="w-full max-w-[340px] bg-slate-950 rounded-[44px] p-3 shadow-2xl border-4 border-stone-800 relative">
+      {/* Realistic Smartphone Frame with Side Buttons */}
+      <div className="w-full max-w-[340px] bg-slate-900 rounded-[50px] p-3 shadow-2xl border-4 border-slate-700/80 relative">
+        {/* Left Side Volume Buttons */}
+        <div className="absolute -left-1 top-24 w-1 h-10 bg-slate-700 rounded-l" />
+        <div className="absolute -left-1 top-38 w-1 h-10 bg-slate-700 rounded-l" />
+        {/* Right Side Power Button */}
+        <div className="absolute -right-1 top-32 w-1 h-14 bg-slate-700 rounded-r" />
+
         {/* Dynamic Island / Notch */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20 flex items-center justify-end px-2">
-          <span className="w-2 h-2 rounded-full bg-slate-800"></span>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-black rounded-full z-30 flex items-center justify-between px-3 shadow-inner">
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800" />
+          <div className="w-2 h-2 rounded-full bg-blue-950/80" />
         </div>
 
         {/* Screen Content */}
-        <div className="bg-stone-50 rounded-[34px] overflow-hidden min-h-[560px] flex flex-col justify-between text-slate-800 text-xs border border-stone-800 relative">
-          {/* Status Bar */}
-          <div className="bg-stone-900 text-white px-5 pt-3 pb-2 flex justify-between items-center text-[10px] font-mono">
-            <span>04:12 AM</span>
-            <div className="flex items-center gap-1.5">
+        <div className="bg-stone-100 rounded-[38px] overflow-hidden min-h-[580px] flex flex-col justify-between text-slate-800 text-xs border border-slate-800 relative shadow-inner">
+          {/* Realistic Mobile Status Bar */}
+          <div className="bg-stone-900 text-white px-6 pt-3 pb-2 flex justify-between items-center text-[10px] font-mono">
+            <span className="font-bold">04:12 AM</span>
+            <div className="flex items-center gap-1.5 text-stone-300">
+              <span className="text-[9px] font-bold">5G</span>
               <Wifi className="w-3 h-3" />
-              <span>5G</span>
-              <Battery className="w-3.5 h-3.5 fill-current" />
+              <div className="flex items-center gap-1 font-bold">
+                <span className="text-[8px]">92%</span>
+                <Battery className="w-3.5 h-3.5 fill-current text-emerald-400" />
+              </div>
             </div>
           </div>
 
@@ -83,9 +93,33 @@ export const SmartphoneSimulator: React.FC = () => {
             </div>
             <div className="relative">
               <Bell className="w-4 h-4 text-emerald-100" />
-              <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5 animate-ping"></span>
+              {farmer.status === 'Pending' && (
+                <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5 animate-ping" />
+              )}
             </div>
           </div>
+
+          {/* Incoming Push Notification Banner upon Pending Requisition */}
+          {farmer.status === 'Pending' && (
+            <div
+              onClick={() => sounds.playNotificationChime()}
+              className="mx-3 mt-2.5 p-3 bg-slate-900/95 text-white rounded-2xl shadow-xl border border-emerald-500/40 animate-in slide-in-from-top-3 duration-300 space-y-1 cursor-pointer"
+            >
+              <div className="flex items-center justify-between text-[10px] text-stone-400">
+                <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+                  <span className="text-xs">🌾</span>
+                  <span>MITTI2MARKET KISAN ALERT</span>
+                </div>
+                <span className="font-mono text-stone-400">Just Now</span>
+              </div>
+              <div className="text-xs font-extrabold text-white">
+                New Demand: {allocatedQty} kg {farmer.todayCrop} @ ₹{farmer.offeredRate}/kg
+              </div>
+              <p className="text-[10px] text-slate-300 leading-snug">
+                Institutional buyer requires {allocatedQty} kg. Farm-gate collection tomorrow 04:00 AM.
+              </p>
+            </div>
+          )}
 
           {/* Incoming Push Notification Banner upon 100% Settlement */}
           {isDelivered && farmer.status === 'Accepted' && (
@@ -107,7 +141,7 @@ export const SmartphoneSimulator: React.FC = () => {
           )}
 
           {/* Screen Body */}
-          <div className="p-4 flex-1 space-y-3 overflow-y-auto">
+          <div className="p-3.5 flex-1 space-y-3 overflow-y-auto">
             {/* If Order Completed / Delivered: Show Payment Credited Notification Card */}
             {isDelivered && farmer.status === 'Accepted' ? (
               <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-300 space-y-3 animate-in fade-in">
@@ -145,36 +179,86 @@ export const SmartphoneSimulator: React.FC = () => {
                 </div>
               </div>
             ) : farmer.status === 'Accepted' ? (
-              <div className="bg-white rounded-2xl p-4 border border-emerald-300 shadow-xs space-y-2 text-center">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-lg font-bold">
+              /* Visually Obvious ACCEPTED State */
+              <div className="bg-emerald-50 rounded-2xl p-5 border-2 border-emerald-400 shadow-md space-y-3 text-center animate-in zoom-in-95">
+                <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto text-xl font-bold shadow-md shadow-emerald-600/30">
                   ✓
                 </div>
-                <h5 className="font-extrabold text-emerald-950 text-sm">Order Accepted ✓</h5>
-                <p className="text-stone-600 text-[11px]">
-                  Pickup scheduled for <strong>4:00 AM – 5:00 AM</strong>. Driver Arjun Singh will arrive with refrigerated truck.
-                </p>
-                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-800 text-[10px] font-bold">
-                  70% Escrow will be released immediately after farm-gate quality verification.
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+                    ऑर्डर स्वीकृत • Confirmed
+                  </span>
+                  <h5 className="font-extrabold text-emerald-950 text-base mt-1">
+                    {allocatedQty} kg {farmer.todayCrop} Accepted
+                  </h5>
                 </div>
+
+                <div className="p-3 rounded-xl bg-white border border-emerald-200 text-left space-y-1 text-xs">
+                  <div className="flex justify-between text-stone-600">
+                    <span>Agreed Farm-Gate Rate:</span>
+                    <span className="font-mono font-bold text-slate-900">₹{farmer.offeredRate}/kg</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600">
+                    <span>Total Order Payout:</span>
+                    <span className="font-mono font-bold text-emerald-800">₹{totalPayout.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between text-emerald-700 font-medium pt-1 border-t border-emerald-100">
+                    <span>70% Escrow Guarantee:</span>
+                    <span className="font-mono font-bold">₹{Math.round(totalPayout * 0.7).toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-emerald-100/80 text-emerald-900 text-[11px] font-bold text-left flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                  <span>Pickup scheduled for 4:00 AM – 5:00 AM. Refrigerated logistics truck driver Arjun Singh will arrive at farm-gate.</span>
+                </div>
+
+                <button
+                  onClick={() => farmerReject(farmer.id, 'Change of availability / testing reject flow')}
+                  className="text-[10px] text-rose-600 hover:underline font-semibold cursor-pointer"
+                >
+                  Change decision to Reject (Test Standby Flow)
+                </button>
               </div>
             ) : farmer.status === 'Rejected' ? (
-              <div className="bg-white rounded-2xl p-4 border border-rose-300 shadow-xs space-y-2 text-center">
-                <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center mx-auto text-lg font-bold">
+              /* Visually Obvious REJECTED State */
+              <div className="bg-rose-50 rounded-2xl p-5 border-2 border-rose-400 shadow-md space-y-3 text-center animate-in zoom-in-95">
+                <div className="w-12 h-12 rounded-full bg-rose-600 text-white flex items-center justify-center mx-auto text-xl font-bold shadow-md shadow-rose-600/30">
                   ✕
                 </div>
-                <h5 className="font-extrabold text-rose-950 text-sm">Demand Rejected</h5>
-                <p className="text-stone-500 text-[11px]">
-                  You declined this fulfillment request. The platform automatically re-routed supply to nearby standby reserves.
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full border border-rose-300">
+                    मांग अस्वीकृत • Declined
+                  </span>
+                  <h5 className="font-extrabold text-rose-950 text-base mt-1">
+                    Demand Requisition Declined
+                  </h5>
+                </div>
+
+                <p className="text-stone-600 text-[11px] leading-relaxed">
+                  You declined this fulfillment request. Mitti2Market's standby matching engine has automatically engaged a nearby standby reserve farmer to keep the 1,000 kg pool intact.
                 </p>
+
+                <div className="p-2.5 rounded-xl bg-rose-100 text-rose-900 text-[10px] font-bold">
+                  Standby Farmer Slotting Triggered • Buyer Pool Protected
+                </div>
+
+                <button
+                  onClick={handleAccept}
+                  className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer transition shadow-xs"
+                >
+                  Re-Accept This Demand
+                </button>
               </div>
             ) : (
               /* New Buyer Demand Card */
               <div className="bg-white rounded-2xl p-4 border border-stone-200 shadow-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-stone-100">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     New Buyer Demand Alert
                   </span>
-                  <span className="text-[10px] text-stone-400 font-mono">Just Now</span>
+                  <span className="text-[10px] text-stone-400 font-mono">Today</span>
                 </div>
 
                 <div>
@@ -182,7 +266,7 @@ export const SmartphoneSimulator: React.FC = () => {
                     {farmer.todayCrop} — {allocatedQty} kg Required
                   </h4>
                   <div className="text-[11px] text-stone-500 mt-0.5">
-                    Buyer: <span className="font-semibold text-slate-800">Mitti2Market Institutional Buyer</span>
+                    Buyer: <span className="font-semibold text-slate-800">Nature Fresh Supermarkets Ltd</span>
                   </div>
                 </div>
 
@@ -197,10 +281,18 @@ export const SmartphoneSimulator: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Total Produce Value */}
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+                  <span className="text-emerald-900 font-semibold">Total Produce Earnings:</span>
+                  <span className="font-mono font-extrabold text-emerald-800 text-sm">
+                    ₹{totalPayout.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
                 {/* Savings vs Mandi */}
                 <div className="p-2 rounded-xl bg-emerald-100/70 text-emerald-900 text-[10px] font-bold flex items-center gap-1.5">
-                  <TrendingDown className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Estimated +18% higher return vs today's local trader mandi rate</span>
+                  <TrendingDown className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>+18% higher direct return vs local trader cash rate</span>
                 </div>
 
                 {/* Counter Offer Input if toggled */}
@@ -219,7 +311,7 @@ export const SmartphoneSimulator: React.FC = () => {
                       />
                       <button
                         onClick={handleSendCounter}
-                        className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[11px] shrink-0"
+                        className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-[11px] shrink-0 cursor-pointer"
                       >
                         Submit
                       </button>
@@ -231,7 +323,7 @@ export const SmartphoneSimulator: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={handleAccept}
-                        className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-1 shadow-sm cursor-pointer transition"
+                        className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-1 shadow-sm cursor-pointer transition active:scale-95"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>ACCEPT</span>
@@ -239,7 +331,7 @@ export const SmartphoneSimulator: React.FC = () => {
 
                       <button
                         onClick={handleReject}
-                        className="py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-extrabold text-xs flex items-center justify-center gap-1 cursor-pointer transition"
+                        className="py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-extrabold text-xs flex items-center justify-center gap-1 cursor-pointer transition active:scale-95"
                       >
                         <X className="w-3.5 h-3.5" />
                         <span>REJECT</span>
@@ -258,12 +350,13 @@ export const SmartphoneSimulator: React.FC = () => {
             )}
           </div>
 
-          {/* Bottom Navigation Pill */}
-          <div className="bg-stone-100 p-2.5 text-center border-t border-stone-200">
-            <div className="w-20 h-1 bg-stone-400 rounded-full mx-auto"></div>
+          {/* Bottom iOS/Android Home Indicator Bar */}
+          <div className="bg-stone-100 py-3 text-center border-t border-stone-200">
+            <div className="w-28 h-1 bg-slate-400 rounded-full mx-auto" />
           </div>
         </div>
       </div>
     </div>
   );
 };
+
