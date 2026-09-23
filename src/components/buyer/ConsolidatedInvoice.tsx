@@ -3,117 +3,16 @@ import { useDemo } from '../../context/DemoContext';
 import { FileText, Lock, CheckCircle, Truck, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
 
 export const ConsolidatedInvoice: React.FC = () => {
-  const {
-    consolidatedInvoice,
-    confirmOrderAndLockEscrow,
-    setActiveTab,
-    poolContributors,
-    activeDemand,
-    farmerAccept
-  } = useDemo();
-
-  const targetKg = activeDemand ? activeDemand.targetTotalKg : 1000;
-  const acceptedKg = poolContributors
-    .filter((c) => c.status === 'Accepted')
-    .reduce((sum, c) => sum + c.allocatedQty, 0);
-  const progressPercent = Math.min(100, Math.round((acceptedKg / targetKg) * 100));
-  const remainingKg = Math.max(0, targetKg - acceptedKg);
-  const pendingFarmer = poolContributors.find((c) => c.status === 'Pending');
+  const { consolidatedInvoice, confirmOrderAndLockEscrow, setActiveTab } = useDemo();
 
   if (!consolidatedInvoice) {
     return (
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-5 animate-in fade-in">
-        {/* Stepper Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">
-              <Lock className="w-6 h-6 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
-                  Consolidated Tax Invoice &amp; Escrow Vault
-                </h3>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
-                  🔒 UNLOCKS AT 100% POOL
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 mt-0.5">
-                Single unified billing aggregating all participating smallholders into one institutional order
-              </p>
-            </div>
-          </div>
-
-          <div className="text-right text-xs">
-            <span className="text-stone-400">Current Pool Status: </span>
-            <span className="font-mono font-bold text-amber-700">{progressPercent}% Confirmed</span>
-          </div>
-        </div>
-
-        {/* 3-Step Lifecycle Stepper answering "When will invoice appear?" */}
-        <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
-          <div className="text-[10px] font-extrabold uppercase tracking-wider text-stone-400">
-            Invoice Generation Workflow
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 font-bold space-y-1">
-              <div className="flex items-center gap-1.5 text-emerald-700">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-                <span>Step 1: Demand Posted</span>
-              </div>
-              <div className="text-[11px] text-stone-600 font-normal">
-                {targetKg} kg demand broadcast to nearby cluster.
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-400 text-amber-950 font-bold space-y-1 ring-2 ring-amber-400/20">
-              <div className="flex items-center gap-1.5 text-amber-800">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-                <span>Step 2: Pooling ({progressPercent}%)</span>
-              </div>
-              <div className="text-[11px] text-stone-700 font-normal">
-                {acceptedKg}/{targetKg} kg confirmed. {remainingKg > 0 ? `${remainingKg} kg pending consent.` : 'All farmers confirmed!'}
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-stone-100 border border-stone-200 text-stone-500 font-medium space-y-1">
-              <div className="flex items-center gap-1.5 text-stone-700 font-bold">
-                <Lock className="w-3.5 h-3.5 text-stone-400" />
-                <span>Step 3: Invoice &amp; Escrow</span>
-              </div>
-              <div className="text-[11px] text-stone-500">
-                Generates automatically upon 100% pool confirmation.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Informative Explanation for Evaluator */}
-        <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-xs text-amber-950 space-y-2">
-          <div className="font-extrabold flex items-center gap-1.5 text-amber-900">
-            <Sparkles className="w-4 h-4 text-amber-600" />
-            <span>Why is the invoice locked?</span>
-          </div>
-          <p className="text-[11px] text-stone-700 leading-relaxed">
-            In traditional procurement, a buyer would have to negotiate, generate, and process separate invoices for each small farmer (3 different vendors, 3 freight runs, 3 separate bills). Mitti2Market aggregates all smallholders into <strong>ONE single consolidated invoice</strong> with guaranteed delivery.
-          </p>
-          <div className="pt-2 border-t border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <span className="text-[11px] font-semibold text-amber-800">
-              {remainingKg > 0
-                ? `👉 Click "Accept" on pending farmers in the Pool Table above (or below) to reach 1,000 kg and unlock this invoice.`
-                : `✓ All 1,000 kg confirmed! Invoice is generating...`}
-            </span>
-            {pendingFarmer && (
-              <button
-                type="button"
-                onClick={() => farmerAccept(pendingFarmer.farmerId)}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] cursor-pointer shadow-xs transition shrink-0"
-              >
-                Accept Next Farmer ({pendingFarmer.farmerName.split(' ')[0]})
-              </button>
-            )}
-          </div>
-        </div>
+      <div className="bg-white rounded-3xl border border-stone-200 p-8 shadow-xs text-center text-xs space-y-2">
+        <FileText className="w-8 h-8 mx-auto text-stone-300" />
+        <h4 className="font-bold text-slate-700 text-sm">Consolidated Invoice</h4>
+        <p className="text-stone-400">
+          Waiting for pool confirmation (requires 100% farmer acceptance) to generate consolidated invoice...
+        </p>
       </div>
     );
   }
