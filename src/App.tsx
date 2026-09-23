@@ -2,6 +2,7 @@ import React from 'react';
 import { DemoProvider, useDemo } from './context/DemoContext';
 import { Header } from './components/common/Header';
 import { ToastSystem } from './components/common/ToastSystem';
+import { AutoDemoGuideHUD } from './components/common/AutoDemoGuideHUD';
 import { BuyerPortal } from './components/buyer/BuyerPortal';
 import { FarmerModule } from './components/farmer/FarmerModule';
 import { LogisticsPortal } from './components/logistics/LogisticsPortal';
@@ -23,6 +24,9 @@ const MainLayout: React.FC = () => {
         {activeTab === 'logistics' && <LogisticsPortal />}
         {activeTab === 'admin' && <AdminConsole />}
       </main>
+
+      {/* Auto Demo Guided Tour HUD */}
+      <AutoDemoGuideHUD />
 
       {/* Global Toast System */}
       <ToastSystem />

@@ -30,12 +30,22 @@ import { sounds } from '../utils/audioChimes';
 
 export type DemoSpeed = 'Normal' | 'Fast' | 'Instant';
 
+export interface AutoDemoStepInfo {
+  stepIndex: number;
+  totalSteps: number;
+  title: string;
+  explanation: string;
+  targetTab: ModuleTab;
+}
+
 interface DemoContextType {
   activeTab: ModuleTab;
   setActiveTab: (tab: ModuleTab) => void;
   demoSpeed: DemoSpeed;
   setDemoSpeed: (speed: DemoSpeed) => void;
   isAutoDemoRunning: boolean;
+  currentAutoDemoStep: AutoDemoStepInfo | null;
+  stopAutoDemo: () => void;
 
   // Domain state
   crops: Crop[];
@@ -877,14 +887,32 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addToast('🚚 Delivery confirmed! Remaining 30% payment released to farmers.', 'success');
   };
 
-  // 11. Run Full Demo (Automated SIH Pitch Walkthrough)
+  // 11. Run Full Demo (Slow, Step-by-Step Educational Guided Tour)
+  const [currentAutoDemoStep, setCurrentAutoDemoStep] = useState<AutoDemoStepInfo | null>(null);
+
+  const stopAutoDemo = () => {
+    autoDemoTimerRef.current.forEach(clearTimeout);
+    autoDemoTimerRef.current = [];
+    setIsAutoDemoRunning(false);
+    setCurrentAutoDemoStep(null);
+    addToast('Auto demo tour stopped.', 'info');
+  };
+
   const runFullDemo = () => {
     restartDemo();
     setIsAutoDemoRunning(true);
-    addToast('Starting Full Hackathon Simulation Demo...', 'info');
 
-    // Step 1: Post demand after 600ms
+    // STEP 1: Buyer Posts 1,000 kg Demand (0.5s)
     const t1 = setTimeout(() => {
+      setActiveTab('buyer');
+      setCurrentAutoDemoStep({
+        stepIndex: 1,
+        totalSteps: 12,
+        title: '1. Buyer Posts 1,000 kg Demand',
+        explanation: 'Institutional buyer Nature Fresh Supermarkets Ltd posts a bulk requisition for 1,000 kg Tomato. Individual smallholders cannot supply this volume alone.',
+        targetTab: 'buyer'
+      });
+
       postDemand({
         crops: [{ cropId: 'crop-tomato', quantity: 1000 }],
         acceptExtra10Percent: true,
@@ -892,46 +920,154 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deliveryRequiredBy: '7:00 AM',
         buyerName: 'Nature Fresh Supermarkets Ltd'
       });
-    }, getDelay(600));
+    }, getDelay(500));
 
-    // Step 2: Switch to Farmer Module & Farmer 1 (Ramesh) accepts
+    // STEP 2: Algorithmic Knapsack Pooling (6.5s)
     const t2 = setTimeout(() => {
+      setCurrentAutoDemoStep({
+        stepIndex: 2,
+        totalSteps: 12,
+        title: '2. Knapsack Radar Discovers 3 Nearby Farmers',
+        explanation: 'The pooling engine scans a 25 km radius: Ramesh (300 kg) + Mahesh (200 kg) + Suresh (500 kg) = exactly 1,000 kg target consolidated!',
+        targetTab: 'buyer'
+      });
+    }, getDelay(6500));
+
+    // STEP 3: Smartphone Farmer Ramesh Accepts (12.5s)
+    const t3 = setTimeout(() => {
       setActiveTab('farmer');
       setSelectedFarmerId('farmer-ramesh');
+      setCurrentAutoDemoStep({
+        stepIndex: 3,
+        totalSteps: 12,
+        title: '3. Smartphone Farmer Accepts (Ramesh • 300 kg)',
+        explanation: 'Ramesh Patel receives a real-time push alert with +18% higher return vs local mandi and taps ACCEPT on his smartphone.',
+        targetTab: 'farmer'
+      });
+      sounds.playNotificationChime();
       farmerAccept('farmer-ramesh');
-    }, getDelay(3200));
+    }, getDelay(12500));
 
-    // Step 3: Farmer 2 (Mahesh - Keypad) rejects, demonstrating Standby Replacement!
-    const t3 = setTimeout(() => {
-      setSelectedFarmerId('farmer-mahesh');
-      farmerReject('farmer-mahesh', 'Tractor engine breakdown, unable to harvest today.');
-    }, getDelay(5200));
-
-    // Step 4: Farmer 3 (Suresh) accepts
+    // STEP 4: Keypad Farmer Mahesh Rejects via Hindi IVR (18.5s)
     const t4 = setTimeout(() => {
-      setSelectedFarmerId('farmer-suresh');
-      farmerAccept('farmer-suresh');
-    }, getDelay(7800));
+      setSelectedFarmerId('farmer-mahesh');
+      setCurrentAutoDemoStep({
+        stepIndex: 4,
+        totalSteps: 12,
+        title: '4. Keypad Farmer Rejection: Mahesh (Hindi IVR)',
+        explanation: 'Mahesh receives an automated Hindi voice call on his keypad phone. He declines due to tractor breakdown. Standby engine automatically triggers backup!',
+        targetTab: 'farmer'
+      });
+      sounds.playKeypadRing();
+      farmerReject('farmer-mahesh', 'ट्रैक्टर खराबी के कारण आज फसल कटाई संभव नहीं।');
+    }, getDelay(18500));
 
-    // Step 5: Switch back to Buyer Portal to review 100% filled pool and confirm order
+    // STEP 5: Standby Replacement & Suresh Accept (24.5s)
     const t5 = setTimeout(() => {
-      setActiveTab('buyer');
-    }, getDelay(10000));
+      setSelectedFarmerId('farmer-suresh');
+      setCurrentAutoDemoStep({
+        stepIndex: 5,
+        totalSteps: 12,
+        title: '5. Standby Replacement Activated & Pool 100% Filled',
+        explanation: 'Standby farmer Ishwar Patel is seamlessly slotted in to replace the deficit. Suresh Patel (500 kg) accepts. Collective supply reaches the full 1,000 kg!',
+        targetTab: 'farmer'
+      });
+      farmerAccept('farmer-suresh');
+    }, getDelay(24500));
 
+    // STEP 6: Consolidated B2B Invoice & 70% Escrow Deposit (30.5s)
     const t6 = setTimeout(() => {
+      setActiveTab('buyer');
+      setCurrentAutoDemoStep({
+        stepIndex: 6,
+        totalSteps: 12,
+        title: '6. Consolidated Invoice Unlocks & 70% Escrow Locked',
+        explanation: 'The buyer receives ONE unified B2B invoice covering all smallholders. Buyer deposits 70% escrow (₹16,632), unlocking refrigerated truck booking.',
+        targetTab: 'buyer'
+      });
       confirmOrderAndLockEscrow();
-    }, getDelay(12000));
+    }, getDelay(30500));
 
-    // Step 6: Switch to Logistics & Start Pickup Run
+    // STEP 7: Cold-Chain Logistics Dispatched (36.5s)
     const t7 = setTimeout(() => {
       setActiveTab('logistics');
-    }, getDelay(14000));
-
-    const t8 = setTimeout(() => {
+      setCurrentAutoDemoStep({
+        stepIndex: 7,
+        totalSteps: 12,
+        title: '7. Multi-Farm Cold-Chain Pickup Run Dispatched',
+        explanation: 'Refrigerated truck GJ-05-AB-1234 departs on an optimized farm-gate collection route across the agricultural cluster.',
+        targetTab: 'logistics'
+      });
       startPickupRun();
-    }, getDelay(15500));
+    }, getDelay(36500));
 
-    autoDemoTimerRef.current = [t1, t2, t3, t4, t5, t6, t7, t8];
+    // STEP 8: Stop 1 Inspection & 70% Farm-Gate Escrow Release (42.5s)
+    const t8 = setTimeout(() => {
+      setCurrentAutoDemoStep({
+        stepIndex: 8,
+        totalSteps: 12,
+        title: '8. Stop 1 Verified & 70% Farm-Gate Escrow Released',
+        explanation: 'Driver Arjun Singh verifies Ramesh Patel’s 300 kg harvest with digital scales and Agmark Grade A QC. 70% escrow is credited instantly at the farm gate!',
+        targetTab: 'logistics'
+      });
+    }, getDelay(42500));
+
+    // STEP 9: Remaining Stops Verified & Loaded (48.5s)
+    const t9 = setTimeout(() => {
+      setCurrentAutoDemoStep({
+        stepIndex: 9,
+        totalSteps: 12,
+        title: '9. All Stops Inspected: 1,000 kg Secured in Bay',
+        explanation: 'Remaining smallholder stops are inspected, weighed, and loaded. All farmers have received their 70% milestone. Truck is fully loaded for doorstep delivery.',
+        targetTab: 'logistics'
+      });
+    }, getDelay(48500));
+
+    // STEP 10: Auto-Redirect to Buyer Tracking (54.5s)
+    const t10 = setTimeout(() => {
+      setActiveTab('buyer');
+      setCurrentAutoDemoStep({
+        stepIndex: 10,
+        totalSteps: 12,
+        title: '10. Auto-Redirect to Buyer Tracking (30s Highway Transit)',
+        explanation: 'The system automatically redirects to the Buyer Portal! The refrigerated truck cruises on the highway corridor toward Surat APMC Central Bulk Terminal.',
+        targetTab: 'buyer'
+      });
+    }, getDelay(54500));
+
+    // STEP 11: Truck Docks at Buyer Doorstep (60.5s)
+    const t11 = setTimeout(() => {
+      fastForwardTransitToDoorstep();
+      setCurrentAutoDemoStep({
+        stepIndex: 11,
+        totalSteps: 12,
+        title: '11. Truck Docks at Surat APMC Bay 4 Doorstep',
+        explanation: 'The truck docks at the buyer’s facility. 1,000 kg produce is ready for final physical intake verification.',
+        targetTab: 'buyer'
+      });
+    }, getDelay(60500));
+
+    // STEP 12: Final 30% Escrow Released & Complete Settlement (66.5s)
+    const t12 = setTimeout(() => {
+      acceptDoorstepDeliveryAndRelease30Percent();
+      sounds.playSuccessChime();
+      setCurrentAutoDemoStep({
+        stepIndex: 12,
+        totalSteps: 12,
+        title: '12. Final 30% Escrow Released • 100% Settlement Complete',
+        explanation: 'Buyer accepts delivery! Remaining 30% escrow is released. Farmers receive final bank credit SMS & push alerts. 1,000 kg consolidated demand fulfilled without intermediaries!',
+        targetTab: 'buyer'
+      });
+    }, getDelay(66500));
+
+    // Tour Complete (74s)
+    const t13 = setTimeout(() => {
+      setIsAutoDemoRunning(false);
+      setCurrentAutoDemoStep(null);
+      addToast('🎉 Auto Demo Tour Completed! Feel free to explore any module.', 'success');
+    }, getDelay(74000));
+
+    autoDemoTimerRef.current = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13];
   };
 
   // 12. Restart Demo (Clean Reset)
@@ -940,6 +1076,7 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     autoDemoTimerRef.current.forEach(clearTimeout);
     autoDemoTimerRef.current = [];
     setIsAutoDemoRunning(false);
+    setCurrentAutoDemoStep(null);
 
     setCrops(INITIAL_CROPS);
     setFarmers(INITIAL_FARMERS);
@@ -1007,6 +1144,8 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         submitStopQC,
         completeFinalDelivery,
         runFullDemo,
+        stopAutoDemo,
+        currentAutoDemoStep,
         restartDemo,
         dismissToast,
         addToast
