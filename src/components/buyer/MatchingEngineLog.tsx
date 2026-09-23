@@ -6,7 +6,7 @@ export const MatchingEngineLog: React.FC = () => {
   const { matchingLogs } = useDemo();
 
   return (
-    <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-xs flex flex-col h-full sticky top-24 space-y-4">
+    <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-xs flex flex-col space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-stone-100">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-xl bg-purple-100 text-purple-700">
@@ -23,7 +23,7 @@ export const MatchingEngineLog: React.FC = () => {
       </div>
 
       {/* Events List */}
-      <div className="flex-1 overflow-y-auto max-h-[560px] space-y-2.5 pr-1 text-xs">
+      <div className="flex-1 overflow-y-auto max-h-[460px] space-y-2.5 pr-1 text-xs">
         {matchingLogs.length === 0 ? (
           <div className="text-center py-16 text-stone-400 text-xs">
             <Zap className="w-6 h-6 mx-auto mb-2 text-stone-300" />

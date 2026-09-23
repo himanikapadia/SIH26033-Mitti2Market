@@ -1,120 +1,125 @@
 import React from 'react';
-import { ArrowDown, CheckCircle2, TrendingDown, Layers, ShieldCheck, Zap } from 'lucide-react';
+import { Layers, CheckCircle2, XCircle } from 'lucide-react';
 
 export const TraditionalChainComparison: React.FC = () => {
+  const comparisonMetrics = [
+    {
+      metric: 'Farmer Revenue Share',
+      traditional: '30% – 40% of Rupee',
+      traditionalNote: 'Distress sales to local traders',
+      m2m: '80% – 85% of Rupee',
+      m2mNote: 'Direct farm-gate credit',
+      impact: '+45% Return'
+    },
+    {
+      metric: 'Intermediary Layers',
+      traditional: '4 – 5 Middlemen',
+      traditionalNote: 'Trader ➔ Agent ➔ Wholesaler ➔ Retailer',
+      m2m: '0 Middlemen',
+      m2mNote: 'Algorithmic demand pooling',
+      impact: 'Direct Access'
+    },
+    {
+      metric: 'Payment Settlement',
+      traditional: '15 – 45 Days Delay',
+      traditionalNote: 'Paper chits & commission cuts',
+      m2m: 'Instant Escrow',
+      m2mNote: '70% Farm-Gate + 30% Doorstep UPI',
+      impact: 'Same-Day Cash'
+    },
+    {
+      metric: 'Post-Harvest Loss',
+      traditional: '18% – 25% Spoilage',
+      traditionalNote: 'Open ambient trucks, multiple handling',
+      m2m: '< 2% Spoilage',
+      m2mNote: '4:00 AM Reefer cold-chain run',
+      impact: 'Cold Freshness'
+    },
+    {
+      metric: 'Logistics Freight',
+      traditional: '₹3.5 – ₹5.0 / kg',
+      traditionalNote: 'Farmer bears transport to Mandi',
+      m2m: '₹1.0 / kg Flat',
+      m2mNote: 'Consolidated run, paid by BUYER',
+      impact: 'Farmer Pays ₹0'
+    }
+  ];
+
   return (
-    <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-xs space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-4">
-        <div>
-          <h3 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-emerald-600" />
-            <span>Where the Traditional Chain Loses Value</span>
-          </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
-            Reduces unnecessary intermediary layers by digitally connecting fragmented farmer supply with consolidated buyer demand.
-          </p>
+    <div className="bg-white rounded-3xl border border-stone-200 p-5 shadow-xs space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="p-2 rounded-xl bg-rose-100 text-rose-700">
+            <Layers className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-extrabold text-slate-900 text-sm">
+              Where Traditional Chain Loses Value
+            </h3>
+            <p className="text-[10px] text-stone-500 font-mono">Traditional Mandi vs Mitti2Market</p>
+          </div>
         </div>
-        <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-          Direct Agri Logistics Innovation
+        <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+          Direct Pooling
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Traditional Fragmented Chain */}
-        <div className="p-5 rounded-2xl bg-rose-50/40 border border-rose-200/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-rose-900 uppercase tracking-wider">
-              Traditional Fragmented Supply Chain
-            </span>
-            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
-              5 Intermediate Layers
-            </span>
-          </div>
-
-          <div className="space-y-1.5 text-xs text-stone-700">
-            {[
-              { role: 'Small Farmer', sub: 'Fragmented harvest sold under distress' },
-              { role: 'Village Level Local Trader', sub: 'Takes 8-12% commission cut' },
-              { role: 'APMC Mandi Commission Agent / Wholesaler', sub: 'Weighing cuts, delayed cash chits' },
-              { role: 'Regional Distributor', sub: 'Cold-chain gaps, produce handling loss' },
-              { role: 'Local Retailer / Sub-Dealer', sub: 'High retail markup (up to 35%)' },
-              { role: 'End Buyer / Institution', sub: 'High acquisition cost & quality variance' }
-            ].map((node, i, arr) => (
-              <React.Fragment key={i}>
-                <div className="p-2 rounded-xl bg-white border border-rose-100 shadow-2xs flex items-center justify-between">
-                  <span className="font-bold text-slate-900">{node.role}</span>
-                  <span className="text-[11px] text-rose-700 font-medium">{node.sub}</span>
-                </div>
-                {i < arr.length - 1 && (
-                  <div className="flex justify-center text-rose-400">
-                    <ArrowDown className="w-3.5 h-3.5" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div className="p-3 rounded-xl bg-rose-100/70 text-rose-900 text-[11px] font-medium leading-relaxed">
-            ⚠️ <strong>Impact:</strong> Farmers receive only ~30–40% of consumer rupee; high post-harvest transit losses.
-          </div>
-        </div>
-
-        {/* Mitti2Market Demand-First Pooling */}
-        <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-300 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
-              Mitti2Market Demand-First Pooling
-            </span>
-            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-600 text-white">
-              Optimized Single Hop
-            </span>
-          </div>
-
-          <div className="space-y-1.5 text-xs text-stone-700">
-            {[
-              {
-                role: 'Multiple Smallholder Farmers (300kg + 200kg + 500kg)',
-                sub: 'Direct participation via Smartphone & Keypad IVR'
-              },
-              {
-                role: 'Mitti2Market Algorithmic Demand Pooling Engine',
-                sub: 'Automated clustering, failover standby & fair transparent rate'
-              },
-              {
-                role: 'Consolidated Single-Run Logistics (₹1/kg)',
-                sub: 'Perishable 4:00 AM freshness routing paid by buyer'
-              },
-              {
-                role: 'Verified Institutional Buyer (1000 kg Full Fill)',
-                sub: 'Guaranteed milestone escrow lock & Agmark QC at farm gate'
-              }
-            ].map((node, i, arr) => (
-              <React.Fragment key={i}>
-                <div className="p-2.5 rounded-xl bg-white border border-emerald-200 shadow-2xs flex items-center justify-between">
-                  <div className="font-bold text-slate-900">{node.role}</div>
-                  <div className="text-[11px] text-emerald-700 font-semibold">{node.sub}</div>
-                </div>
-                {i < arr.length - 1 && (
-                  <div className="flex justify-center text-emerald-600">
-                    <ArrowDown className="w-3.5 h-3.5" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-emerald-100 text-emerald-950 text-xs space-y-1">
-            <div className="font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-              <span>Key Innovations Demonstrated:</span>
+      {/* Sorted Metric Comparison Rows */}
+      <div className="space-y-2.5">
+        {comparisonMetrics.map((item, idx) => (
+          <div
+            key={idx}
+            className="p-3 rounded-2xl bg-stone-50/80 border border-stone-200 hover:border-stone-300 transition text-xs space-y-2"
+          >
+            {/* Metric Header & Impact Tag */}
+            <div className="flex items-center justify-between">
+              <span className="font-extrabold text-slate-900 text-xs">
+                {idx + 1}. {item.metric}
+              </span>
+              <span className="font-mono text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                {item.impact}
+              </span>
             </div>
-            <ul className="text-[11px] text-emerald-900 list-disc list-inside space-y-0.5">
-              <li>Bulk demand reaches smallholders directly without intermediary opacity.</li>
-              <li>Consolidated logistics replaces repeated fragmented transport.</li>
-              <li>Escrow milestone disbursement protects both small farmer and institutional buyer.</li>
-            </ul>
+
+            {/* Side-by-Side Values */}
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              {/* Traditional (Rose) */}
+              <div className="p-2 rounded-xl bg-rose-50/60 border border-rose-200/70">
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase text-rose-800">
+                  <XCircle className="w-3 h-3 text-rose-600 shrink-0" />
+                  <span>Traditional</span>
+                </div>
+                <div className="font-extrabold text-rose-950 font-mono mt-0.5 text-xs">
+                  {item.traditional}
+                </div>
+                <div className="text-[10px] text-rose-700/80 truncate mt-0.5">
+                  {item.traditionalNote}
+                </div>
+              </div>
+
+              {/* Mitti2Market (Emerald) */}
+              <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-300">
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-800">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                  <span>Mitti2Market</span>
+                </div>
+                <div className="font-extrabold text-emerald-950 font-mono mt-0.5 text-xs">
+                  {item.m2m}
+                </div>
+                <div className="text-[10px] text-emerald-700/90 truncate mt-0.5">
+                  {item.m2mNote}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+
+      {/* Bottom Summary Callout */}
+      <div className="p-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-amber-50 border border-emerald-200 text-[11px] text-emerald-950 font-semibold flex items-center gap-2">
+        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+        <span>Demand-first clustering unlocks full 1,000 kg supply with 0% middleman commission leakages.</span>
       </div>
     </div>
   );

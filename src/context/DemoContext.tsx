@@ -973,6 +973,12 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addLog('Remaining 30% payment initiated to all farmers via UPI / Bank transfer.', 'ESCROW', 'success');
 
     addToast('🚚 Delivery confirmed! Remaining 30% payment released to farmers.', 'success');
+
+    // Automatically redirect to Farmer module to show the credited amount
+    setTimeout(() => {
+      setActiveTab('farmer');
+      addToast('💰 Redirected to Farmer App: 100% Payment Credited to Farmer Accounts!', 'success');
+    }, 1200);
   };
 
   // 11. Run Full Demo (Slow, Step-by-Step Educational Guided Tour)
@@ -1139,12 +1145,13 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const t12 = setTimeout(() => {
       acceptDoorstepDeliveryAndRelease30Percent();
       sounds.playSuccessChime();
+      setActiveTab('farmer');
       setCurrentAutoDemoStep({
         stepIndex: 12,
         totalSteps: 12,
-        title: '12. Final 30% Escrow Released • 100% Settlement Complete',
-        explanation: 'Buyer accepts delivery! Remaining 30% escrow is released. Farmers receive final bank credit SMS & push alerts. 1,000 kg consolidated demand fulfilled without intermediaries!',
-        targetTab: 'buyer'
+        title: '12. Delivery Completed: 100% Payment Credited to Farmer App',
+        explanation: 'Delivery accepted! System redirects to the Farmer App: smallholders receive instant 100% bank/UPI payouts (e.g. Ramesh Patel ₹6,600). The direct pooling cycle is fully fulfilled!',
+        targetTab: 'farmer'
       });
     }, getDelay(66500));
 

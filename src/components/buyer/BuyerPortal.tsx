@@ -73,14 +73,12 @@ export const BuyerPortal: React.FC = () => {
 
           {/* Live Delivery Tracking (Amazon-style, active once pickup starts) */}
           <BuyerLiveTracking />
-
-          {/* Educational Comparison Panel */}
-          <TraditionalChainComparison />
         </div>
 
-        {/* Right Sidebar: 4 Columns (Matching Engine Log Stream) */}
-        <div className="lg:col-span-4">
+        {/* Right Sidebar: 4 Columns (Matching Engine Log Stream + Value Comparison) */}
+        <div className="lg:col-span-4 space-y-6">
           <MatchingEngineLog />
+          <TraditionalChainComparison />
         </div>
       </div>
     </div>
