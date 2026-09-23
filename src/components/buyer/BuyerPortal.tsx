@@ -5,7 +5,6 @@ import { PoolStatus } from './PoolStatus';
 import { ConsolidatedInvoice } from './ConsolidatedInvoice';
 import { MatchingEngineLog } from './MatchingEngineLog';
 import { BuyerLiveTracking } from './BuyerLiveTracking';
-import { TraditionalChainComparison } from '../common/TraditionalChainComparison';
 import { useDemo } from '../../context/DemoContext';
 import { LeafletMap } from '../common/LeafletMap';
 import { AlertTriangle } from 'lucide-react';
@@ -79,10 +78,9 @@ export const BuyerPortal: React.FC = () => {
           <BuyerLiveTracking />
         </div>
 
-        {/* Right Sidebar: 4 Columns (Matching Engine Log Stream + Value Comparison) */}
+        {/* Right Sidebar: 4 Columns (Matching Engine Log Stream) */}
         <div className="lg:col-span-4 space-y-6">
           <MatchingEngineLog />
-          <TraditionalChainComparison />
         </div>
       </div>
     </div>
