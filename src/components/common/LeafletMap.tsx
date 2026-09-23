@@ -145,10 +145,29 @@ export const LeafletMap: React.FC<{
     <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-stone-200 shadow-inner relative">
       {/* Radar scanning banner overlay */}
       {isMatchingActive && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-stone-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-emerald-500/50 shadow-xl animate-pulse">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>{radarScanningLabel || 'Scanning nearby farmer supply...'}</span>
-        </div>
+        <>
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-stone-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-emerald-500/50 shadow-xl animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>{radarScanningLabel || 'Scanning nearby farmer supply...'}</span>
+          </div>
+
+          <div className="absolute top-3 right-3 z-20 bg-slate-950/85 backdrop-blur-md p-3 rounded-2xl border border-emerald-500/40 text-white shadow-xl text-xs space-y-1 font-mono max-w-[210px] hidden sm:block">
+            <div className="flex items-center justify-between border-b border-emerald-500/30 pb-1">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-extrabold text-[10px]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>RADAR TELEMETRY</span>
+              </div>
+              <span className="text-[9px] text-stone-400">15 km</span>
+            </div>
+            <div className="text-[10px] text-stone-300 leading-tight">
+              Knapsack pooling active for Surat Agro-Cluster
+            </div>
+            <div className="text-[10px] text-emerald-300 font-bold pt-0.5 flex justify-between">
+              <span>Cluster Nodes:</span>
+              <span>15 Smallholders</span>
+            </div>
+          </div>
+        </>
       )}
 
       <MapContainer
@@ -169,16 +188,51 @@ export const LeafletMap: React.FC<{
           <>
             <Circle
               center={center}
-              radius={8000}
-              pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.15, weight: 2 }}
+              radius={6000}
+              pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.16, weight: 2 }}
             />
             <Circle
               center={center}
-              radius={18000}
-              pathOptions={{ color: '#059669', fillColor: '#059669', fillOpacity: 0.08, weight: 1.5, dashArray: '4, 8' }}
+              radius={14000}
+              pathOptions={{ color: '#059669', fillColor: '#059669', fillOpacity: 0.09, weight: 1.5, dashArray: '4, 6' }}
+            />
+            <Circle
+              center={center}
+              radius={24000}
+              pathOptions={{ color: '#047857', fillColor: '#047857', fillOpacity: 0.04, weight: 1, dashArray: '3, 8' }}
             />
           </>
         )}
+
+        {/* Supply Pooling Rays linking matched farmers to Surat APMC Hub */}
+        {farmers
+          .filter((f) => ['Accepted', 'Pending', 'Rejected', 'Counter Offer', 'Standby'].includes(f.status))
+          .map((f) => {
+            const rayColor =
+              f.status === 'Accepted'
+                ? '#15803d'
+                : f.status === 'Pending'
+                ? '#eab308'
+                : f.status === 'Rejected'
+                ? '#dc2626'
+                : f.status === 'Standby'
+                ? '#8b5cf6'
+                : '#2563eb';
+
+            return (
+              <Polyline
+                key={`ray-${f.id}`}
+                positions={[
+                  [BUYER_LOCATION.lat, BUYER_LOCATION.lng],
+                  [f.location.lat, f.location.lng]
+                ]}
+                color={rayColor}
+                weight={f.status === 'Accepted' ? 2.5 : 1.8}
+                opacity={f.status === 'Accepted' ? 0.9 : 0.65}
+                dashArray={f.status === 'Accepted' ? '4, 4' : '6, 8'}
+              />
+            );
+          })}
 
         {/* Route Polyline when pickup stops exist */}
         {pickupStops.length > 0 && (
