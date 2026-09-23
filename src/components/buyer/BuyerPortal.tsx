@@ -5,7 +5,6 @@ import { PoolStatus } from './PoolStatus';
 import { ConsolidatedInvoice } from './ConsolidatedInvoice';
 import { MatchingEngineLog } from './MatchingEngineLog';
 import { BuyerLiveTracking } from './BuyerLiveTracking';
-import { EvaluatorQuickGuide } from '../common/EvaluatorQuickGuide';
 import { useDemo } from '../../context/DemoContext';
 import { LeafletMap } from '../common/LeafletMap';
 import { AlertTriangle } from 'lucide-react';
@@ -15,9 +14,6 @@ export const BuyerPortal: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Evaluator Quick-Start Guide Banner */}
-      <EvaluatorQuickGuide />
-
       {/* Main Grid: Left Main Area + Right Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Main Area: 8 Columns */}
