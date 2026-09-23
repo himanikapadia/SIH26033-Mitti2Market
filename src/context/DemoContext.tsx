@@ -123,7 +123,7 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Shortage, transit and doorstep states
   const [shortageEvent, setShortageEvent] = useState<ShortageEvent | null>(null);
-  const [transitSecondsRemaining, setTransitSecondsRemaining] = useState<number>(120);
+  const [transitSecondsRemaining, setTransitSecondsRemaining] = useState<number>(30);
   const [isTransitCountdownActive, setIsTransitCountdownActive] = useState<boolean>(false);
   const [isDoorstepPendingAcceptance, setIsDoorstepPendingAcceptance] = useState<boolean>(false);
   const transitTimerRef = useRef<any>(null);
@@ -814,11 +814,12 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
           deliveryStatus: 'ON_THE_WAY'
         }));
 
-        // Start 2-minute transit countdown to buyer doorstep
-        setTransitSecondsRemaining(120);
+        // Redirect immediately to Buyer Delivery Status & start 30-sec transit countdown
+        setActiveTab('buyer');
+        setTransitSecondsRemaining(30);
         setIsTransitCountdownActive(true);
-        addLog('Consolidated 1000 kg load in transit to Buyer Facility (Surat APMC). Estimated transit: 2:00 minutes.', 'LOGISTICS', 'info');
-        addToast('All stops collected! Truck en route to buyer. Auto-redirect in 2 mins (or click Fast-Forward).', 'info');
+        addLog('Consolidated 1000 kg load in transit to Buyer Facility (Surat APMC). Estimated transit: 30 seconds.', 'LOGISTICS', 'info');
+        addToast('All farm pickups done! Redirecting to Buyer Delivery Status (30s highway transit)...', 'info');
       }
       return;
     }
@@ -957,7 +958,7 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveTab('buyer');
 
     setShortageEvent(null);
-    setTransitSecondsRemaining(120);
+    setTransitSecondsRemaining(30);
     setIsTransitCountdownActive(false);
     setIsDoorstepPendingAcceptance(false);
     if (transitTimerRef.current) clearTimeout(transitTimerRef.current);

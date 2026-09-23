@@ -21,7 +21,10 @@ export const BuyerLiveTracking: React.FC = () => {
     completeFinalDelivery,
     setActiveTab,
     isDoorstepPendingAcceptance,
-    acceptDoorstepDeliveryAndRelease30Percent
+    acceptDoorstepDeliveryAndRelease30Percent,
+    transitSecondsRemaining,
+    isTransitCountdownActive,
+    fastForwardTransitToDoorstep
   } = useDemo();
 
   if (!consolidatedInvoice || !fleet.pickupRunsActive) return null;
@@ -66,6 +69,11 @@ export const BuyerLiveTracking: React.FC = () => {
               <PackageCheck className="w-4 h-4 text-amber-700" />
               ARRIVED AT DOORSTEP • AWAITING 30% ESCROW ACCEPTANCE
             </span>
+          ) : isTransitCountdownActive ? (
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300 animate-pulse">
+              <Clock className="w-4 h-4 text-amber-700 animate-spin" />
+              IN HIGHWAY TRANSIT (~{transitSecondsRemaining}s TO APMC)
+            </span>
           ) : isNearBuyer ? (
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300 animate-pulse">
               <Clock className="w-4 h-4 text-amber-700" />
@@ -79,6 +87,61 @@ export const BuyerLiveTracking: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* 30-Second Highway Transit Countdown Card (Active while truck drives to APMC) */}
+      {isTransitCountdownActive && !isDoorstep && !isDelivered && (
+        <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-50 to-orange-50 border-2 border-amber-400 shadow-md space-y-3 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2.5 rounded-2xl bg-amber-500 text-slate-950 font-bold shadow-xs">
+                <Truck className="w-5 h-5 animate-bounce" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-amber-950 text-sm sm:text-base flex items-center gap-2">
+                  <span>Refrigerated Truck En Route to Surat APMC Doorstep</span>
+                </h4>
+                <p className="text-xs text-amber-900">
+                  All farm-gate pickups verified. Consolidated load ({fleet.currentLoadKg} kg) cruising on highway corridor.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+              <div className="px-3.5 py-1.5 rounded-full bg-amber-500 text-slate-950 font-mono font-extrabold text-xs flex items-center gap-1.5 shadow-xs">
+                <Clock className="w-3.5 h-3.5 animate-spin" />
+                <span>Arriving in {transitSecondsRemaining}s</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Expressway Highway Transit Progress Bar */}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex justify-between text-[10px] font-mono text-stone-500">
+              <span>Farm Gate Pickups Completed</span>
+              <span className="text-amber-800 font-bold">Expressway Transit ({transitSecondsRemaining}s)</span>
+              <span>Surat APMC Doorstep</span>
+            </div>
+            <div className="w-full bg-stone-200 rounded-full h-3 overflow-hidden p-0.5 border border-stone-300">
+              <div
+                className="bg-gradient-to-r from-amber-500 via-emerald-500 to-emerald-600 h-full rounded-full transition-all duration-300 ease-out shadow-xs"
+                style={{ width: `${Math.min(100, Math.max(5, Math.round(((30 - transitSecondsRemaining) / 30) * 100)))}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs pt-1 border-t border-amber-200/60">
+            <span className="text-stone-500 text-[11px]">
+              Doorstep intake will automatically unlock when truck docks (in <strong>{transitSecondsRemaining} seconds</strong>).
+            </span>
+            <button
+              onClick={fastForwardTransitToDoorstep}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs cursor-pointer transition shadow-xs flex items-center gap-1 self-end sm:self-auto"
+            >
+              <span>Fast-Forward to Doorstep &gt;&gt;</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Prominent Doorstep Delivery Intake & 30% Payment Release Card */}
       {isDoorstep && !isDelivered && (

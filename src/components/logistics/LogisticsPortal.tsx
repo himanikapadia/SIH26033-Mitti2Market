@@ -222,22 +222,22 @@ export const LogisticsPortal: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Progress Bar of 2-min Transit */}
+                  {/* Progress Bar of 30-sec Transit */}
                   {isTransitCountdownActive && (
                     <div className="space-y-2 pt-1 border-t border-stone-800">
                       <div className="flex justify-between text-[10px] font-mono text-stone-400">
                         <span>Farm Gate Clusters</span>
-                        <span className="text-amber-400 font-bold">Expressway Corridor</span>
+                        <span className="text-amber-400 font-bold">Expressway Corridor ({transitSecondsRemaining}s)</span>
                         <span>Surat APMC Doorstep</span>
                       </div>
                       <div className="w-full bg-stone-800 rounded-full h-2.5 overflow-hidden border border-stone-700">
                         <div
                           className="bg-gradient-to-r from-amber-500 to-emerald-400 h-full rounded-full transition-all duration-300 ease-out"
-                          style={{ width: `${Math.min(100, Math.max(5, Math.round(((120 - transitSecondsRemaining) / 120) * 100)))}%` }}
+                          style={{ width: `${Math.min(100, Math.max(5, Math.round(((30 - transitSecondsRemaining) / 30) * 100)))}%` }}
                         ></div>
                       </div>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-stone-300 pt-1">
-                        <span>Auto-redirecting to Buyer Live Tracking in <strong>{transitSecondsRemaining}s</strong>...</span>
+                        <span>En route to Buyer Live Tracking (<strong>{transitSecondsRemaining}s</strong> remaining)...</span>
                         <button
                           onClick={fastForwardTransitToDoorstep}
                           className="text-amber-400 hover:text-amber-300 font-extrabold flex items-center gap-1 cursor-pointer transition underline underline-offset-4 self-end sm:self-auto"
