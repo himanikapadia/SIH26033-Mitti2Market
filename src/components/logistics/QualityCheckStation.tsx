@@ -326,55 +326,79 @@ export const QualityCheckStation: React.FC<{
           </button>
         </div>
 
-        {/* Viewfinder Preview */}
-        <div className="relative rounded-xl overflow-hidden border border-emerald-300/80 bg-slate-950 aspect-video max-h-36 flex items-center justify-center">
+        {/* Viewfinder Preview with YOLOv8 Bounding Boxes */}
+        <div className="relative rounded-2xl overflow-hidden border border-emerald-400 bg-slate-950 aspect-video max-h-48 flex items-center justify-center shadow-inner">
           <img
             src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80"
             alt="Produce Sample"
-            className="w-full h-full object-cover opacity-75"
+            className="w-full h-full object-cover opacity-80"
           />
 
-          {/* Crosshair Viewfinder Reticle */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-24 h-24 border-2 border-emerald-400/80 rounded-lg relative">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[8px] font-mono px-1 rounded">
-                DETECTION TARGET
+          {/* YOLOv8 Produce Detection Bounding Boxes */}
+          <div className="absolute inset-0 pointer-events-none p-3">
+            {/* Bounding Box 1 */}
+            <div className="absolute top-4 left-6 w-24 h-24 border-2 border-emerald-400 rounded-lg">
+              <span className="absolute -top-3.5 left-0 bg-emerald-700 text-white text-[8px] font-mono font-bold px-1 rounded shadow-xs uppercase whitespace-nowrap">
+                #1 99.2% Gr-A (Blemish 0.1%)
               </span>
-              <div className="w-full h-full border-t border-b border-emerald-400/30"></div>
+            </div>
+
+            {/* Bounding Box 2 */}
+            <div className="absolute top-8 right-8 w-28 h-28 border-2 border-emerald-400 rounded-lg">
+              <span className="absolute -top-3.5 left-0 bg-emerald-700 text-white text-[8px] font-mono font-bold px-1 rounded shadow-xs uppercase whitespace-nowrap">
+                #2 97.8% Gr-A (Firm Calyx)
+              </span>
+            </div>
+
+            {/* Center Crosshair Viewfinder Reticle */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 border border-emerald-400/40 rounded-full relative flex items-center justify-center">
+                <div className="w-2 h-2 bg-emerald-400/70 rounded-full"></div>
+              </div>
             </div>
           </div>
 
           {/* Animated Scanning Laser Line */}
           {isAiScanning && (
-            <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-400 via-amber-300 to-emerald-400 shadow-lg shadow-emerald-500/50 animate-bounce top-1/2"></div>
+            <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-400 via-amber-300 to-emerald-400 shadow-lg shadow-emerald-500/80 animate-bounce top-1/2"></div>
           )}
 
-          {/* Timestamp & Lot Stamp */}
-          <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-mono text-emerald-300 border border-emerald-500/30">
-            Agmark AI Stamp • {scanTimestamp}
-          </div>
-          <div className="absolute top-2 right-2 z-10 bg-black/70 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-mono text-amber-300 border border-amber-500/30 flex items-center gap-1">
-            <QrCode className="w-2.5 h-2.5" />
-            #LOT-SRT-{currentStop.stopNumber}
+          {/* Bottom Telemetry Bar */}
+          <div className="absolute bottom-2 inset-x-2 z-10 flex items-center justify-between text-[9px] font-mono">
+            <div className="bg-black/80 backdrop-blur-xs px-2 py-0.5 rounded text-emerald-300 border border-emerald-500/40">
+              YOLOv8-Nano • {scanTimestamp}
+            </div>
+            <div className="bg-black/80 backdrop-blur-xs px-2 py-0.5 rounded text-stone-300 border border-stone-700 flex items-center gap-1">
+              <span>⚡ 24ms (Edge CPU)</span>
+            </div>
+            <div className="bg-black/80 backdrop-blur-xs px-2 py-0.5 rounded text-amber-300 border border-amber-500/40 flex items-center gap-1">
+              <QrCode className="w-2.5 h-2.5" />
+              <span>Agmark #0x8F2D</span>
+            </div>
           </div>
         </div>
 
         {/* AI Diagnostics Metrics Readout */}
-        <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
-          <div className="p-2 rounded-xl bg-white border border-emerald-100">
+        <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
+          <div className="p-2 rounded-xl bg-stone-50 border border-stone-200">
             <div className="text-stone-400 text-[9px]">Model Confidence</div>
             <div className="font-extrabold text-emerald-700 text-xs mt-0.5">98.6%</div>
-            <div className="text-emerald-600 font-semibold text-[9px]">High Precision</div>
+            <div className="text-emerald-600 font-semibold text-[8px]">YOLOv8-Nano</div>
           </div>
-          <div className="p-2 rounded-xl bg-white border border-emerald-100">
-            <div className="text-stone-400 text-[9px]">Defect Risk</div>
+          <div className="p-2 rounded-xl bg-stone-50 border border-stone-200">
+            <div className="text-stone-400 text-[9px]">Defect Ratio</div>
             <div className="font-extrabold text-emerald-700 text-xs mt-0.5">0.3%</div>
-            <div className="text-emerald-600 font-semibold text-[9px]">Minimal Risk</div>
+            <div className="text-emerald-600 font-semibold text-[8px]">Zero Rot</div>
           </div>
-          <div className="p-2 rounded-xl bg-white border border-emerald-100">
+          <div className="p-2 rounded-xl bg-stone-50 border border-stone-200">
             <div className="text-stone-400 text-[9px]">Freshness Index</div>
             <div className="font-extrabold text-emerald-700 text-xs mt-0.5">96 / 100</div>
-            <div className="text-emerald-600 font-semibold text-[9px]">Morning Harvest</div>
+            <div className="text-emerald-600 font-semibold text-[8px]">Morning Harvest</div>
+          </div>
+          <div className="p-2 rounded-xl bg-stone-50 border border-stone-200">
+            <div className="text-stone-400 text-[9px]">Estimated Brix</div>
+            <div className="font-extrabold text-emerald-700 text-xs mt-0.5">4.8°Bx</div>
+            <div className="text-emerald-600 font-semibold text-[8px]">Grade-A Sugar</div>
           </div>
         </div>
       </div>

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDemo } from '../../context/DemoContext';
-import { CheckCircle2, Clock, XCircle, AlertCircle, ArrowUpRight, Users, Sparkles } from 'lucide-react';
+import { CheckCircle2, Clock, XCircle, AlertCircle, ArrowUpRight, Users, Sparkles, BrainCircuit } from 'lucide-react';
+import { ExplainableAIMatchModal } from '../common/ExplainableAIMatchModal';
 
 export const PoolStatus: React.FC = () => {
+  const [inspectingFarmerId, setInspectingFarmerId] = useState<string | null>(null);
   const {
     activeDemand,
     poolContributors,
@@ -288,6 +290,16 @@ export const PoolStatus: React.FC = () => {
                           <span>Phone</span>
                           <ArrowUpRight className="w-3 h-3" />
                         </button>
+
+                        {/* Explainable AI Match Score Button */}
+                        <button
+                          onClick={() => setInspectingFarmerId(c.farmerId)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold cursor-pointer transition shadow-2xs"
+                          title="Explain why the AI algorithm matched this farmer"
+                        >
+                          <BrainCircuit className="w-3 h-3 text-emerald-700" />
+                          <span>AI Score</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -297,6 +309,12 @@ export const PoolStatus: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Explainable AI Decision Breakdown Modal */}
+      <ExplainableAIMatchModal
+        farmerId={inspectingFarmerId}
+        onClose={() => setInspectingFarmerId(null)}
+      />
     </div>
   );
 };

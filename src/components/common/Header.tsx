@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDemo, DemoSpeed } from '../../context/DemoContext';
 import { ModuleTab } from '../../types';
+import { AIEvaluatorModal } from './AIEvaluatorModal';
 import {
   ShoppingBag,
   Sprout,
@@ -11,10 +12,12 @@ import {
   Sparkles,
   Gauge,
   Radio,
-  ShieldCheck
+  ShieldCheck,
+  BrainCircuit
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const {
     activeTab,
     setActiveTab,
@@ -76,8 +79,21 @@ export const Header: React.FC = () => {
           </span>
         </div>
 
-        {/* Demo Controls: Speed + Run Full Demo + Restart Demo */}
+        {/* Demo Controls: AI Model Stack + Speed + Run Full Demo + Restart Demo */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* AI Model Stack Inspector for Evaluators */}
+          <button
+            onClick={() => setIsAiModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition cursor-pointer shadow-xs"
+            title="Inspect 4 Core AI Engines, Live Inference Playground & SIH Evaluator Criteria"
+          >
+            <BrainCircuit className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span>AI Architecture</span>
+            <span className="hidden sm:inline text-[9px] font-mono px-1 rounded bg-emerald-950 text-emerald-300">
+              4 Models
+            </span>
+          </button>
+
           {/* Speed Toggle */}
           <div className="flex items-center gap-1 bg-stone-800 px-2 py-0.5 rounded-lg border border-stone-700 text-[11px]">
             <Gauge className="w-3 h-3 text-stone-400" />
@@ -188,6 +204,9 @@ export const Header: React.FC = () => {
           </nav>
         </div>
       </div>
+
+      {/* AI Architecture & Evaluator Inspector Modal */}
+      <AIEvaluatorModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
     </header>
   );
 };
