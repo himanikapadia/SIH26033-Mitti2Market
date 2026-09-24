@@ -11,7 +11,8 @@ import {
   TrendingUp,
   Truck,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 
 export const AdminConsole: React.FC = () => {
@@ -24,7 +25,7 @@ export const AdminConsole: React.FC = () => {
     poolContributors,
     activeDemand,
     farmerReject,
-    runFullDemo
+    restartDemo
   } = useDemo();
 
   const standbyFarmers = farmers.filter((f) => f.isStandby);
@@ -48,11 +49,11 @@ export const AdminConsole: React.FC = () => {
         </div>
 
         <button
-          onClick={runFullDemo}
+          onClick={restartDemo}
           className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-purple-600/20 cursor-pointer transition shrink-0"
         >
-          <Sparkles className="w-4 h-4" />
-          <span>Simulate Pitch Workflow</span>
+          <RotateCcw className="w-4 h-4" />
+          <span>Reset Grid State</span>
         </button>
       </div>
 

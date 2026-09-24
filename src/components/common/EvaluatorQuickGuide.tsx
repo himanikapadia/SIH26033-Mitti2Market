@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import {
   Compass,
-  Play,
   ChevronDown,
   ChevronUp,
   ShoppingBag,
@@ -18,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const EvaluatorQuickGuide: React.FC = () => {
-  const { runFullDemo, isAutoDemoRunning, setActiveTab } = useDemo();
+  const { setActiveTab } = useDemo();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   return (
@@ -45,21 +44,6 @@ export const EvaluatorQuickGuide: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          {/* 1-Click Auto Demo */}
-          <button
-            onClick={runFullDemo}
-            disabled={isAutoDemoRunning}
-            className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-md ${
-              isAutoDemoRunning
-                ? 'bg-amber-600 text-white animate-pulse'
-                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-700/20'
-            }`}
-            title="Automatically run the complete 18-step hackathon pitch flow"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isAutoDemoRunning ? 'Running Tour...' : 'Run 90-Sec Auto Demo'}</span>
-          </button>
-
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1.5 rounded-xl border border-stone-700 text-stone-400 hover:text-white hover:bg-stone-800 transition cursor-pointer text-xs"

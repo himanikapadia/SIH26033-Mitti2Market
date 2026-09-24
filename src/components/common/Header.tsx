@@ -8,7 +8,6 @@ import {
   Truck,
   Layers,
   RotateCcw,
-  Play,
   Sparkles,
   Gauge,
   Radio,
@@ -23,9 +22,7 @@ export const Header: React.FC = () => {
     setActiveTab,
     demoSpeed,
     setDemoSpeed,
-    runFullDemo,
     restartDemo,
-    isAutoDemoRunning,
     poolContributors,
     pickupStops,
     fleet,
@@ -112,21 +109,6 @@ export const Header: React.FC = () => {
               </button>
             ))}
           </div>
-
-          {/* Run Full Demo Automation */}
-          <button
-            onClick={runFullDemo}
-            disabled={isAutoDemoRunning}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer ${
-              isAutoDemoRunning
-                ? 'bg-amber-600 text-white animate-pulse'
-                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-            }`}
-            title="Automatically run the complete 18-step hackathon pitch flow"
-          >
-            <Play className="w-3 h-3 fill-current" />
-            <span>{isAutoDemoRunning ? 'Simulating...' : 'Run Full Demo'}</span>
-          </button>
 
           {/* Restart Demo Button */}
           <button

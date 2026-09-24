@@ -19,7 +19,7 @@ export const PoolStatus: React.FC = () => {
       <div className="bg-white rounded-3xl border border-dashed border-stone-300 p-8 text-center text-stone-400 text-xs">
         <Users className="w-8 h-8 mx-auto mb-2 text-stone-300" />
         <h4 className="font-bold text-slate-700 text-sm">No Active Demand Pool</h4>
-        <p className="mt-1">Post a new demand above or click "Run Full Demo" to see demand-first pooling in action.</p>
+        <p className="mt-1">Post a new demand above to see demand-first pooling in action.</p>
       </div>
     );
   }
