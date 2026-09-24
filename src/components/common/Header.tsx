@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDemo, DemoSpeed } from '../../context/DemoContext';
+import { useDemo } from '../../context/DemoContext';
 import { ModuleTab } from '../../types';
 import { AIEvaluatorModal } from './AIEvaluatorModal';
 import {
@@ -9,7 +9,6 @@ import {
   Layers,
   RotateCcw,
   Sparkles,
-  Gauge,
   Radio,
   ShieldCheck,
   BrainCircuit
@@ -20,8 +19,6 @@ export const Header: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
-    demoSpeed,
-    setDemoSpeed,
     restartDemo,
     poolContributors,
     pickupStops,
@@ -91,24 +88,6 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          {/* Speed Toggle */}
-          <div className="flex items-center gap-1 bg-stone-800 px-2 py-0.5 rounded-lg border border-stone-700 text-[11px]">
-            <Gauge className="w-3 h-3 text-stone-400" />
-            <span className="text-stone-400 hidden md:inline">Speed:</span>
-            {(['Normal', 'Fast', 'Instant'] as DemoSpeed[]).map((spd) => (
-              <button
-                key={spd}
-                onClick={() => setDemoSpeed(spd)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer transition ${
-                  demoSpeed === spd
-                    ? 'bg-emerald-600 text-white shadow-2xs'
-                    : 'text-stone-400 hover:text-stone-200'
-                }`}
-              >
-                {spd}
-              </button>
-            ))}
-          </div>
 
           {/* Restart Demo Button */}
           <button
