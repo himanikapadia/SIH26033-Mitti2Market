@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { MOCK_CROP_FORECASTS } from '../../data/aiIntelligenceData';
 import {
-  TrendingUp,
   BrainCircuit,
-  Sparkles,
   BarChart3,
   Clock,
-  ShieldCheck,
-  Check,
-  ArrowRight
+  ArrowRight,
+  TrendingUp
 } from 'lucide-react';
 
 export const AIDemandForecasting: React.FC = () => {
@@ -31,7 +28,7 @@ export const AIDemandForecasting: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold mb-2 border border-emerald-200">
             <BrainCircuit className="w-3.5 h-3.5 text-emerald-700" />
-            <span>AI Predictive Demand & Market Intelligence</span>
+            <span>AI Predictive Demand &amp; Market Intelligence</span>
           </div>
           <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 flex items-center gap-2">
             <span>AI Demand Forecasting Engine</span>
@@ -40,7 +37,7 @@ export const AIDemandForecasting: React.FC = () => {
             </span>
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
-            APMC Gujarat Mandi arrival &amp; price predictor. Flags local cluster deficits and calculates cost-effective procurement schedules.
+            APMC Mandi arrival &amp; price predictor. Flags local cluster deficits and calculates cost-effective procurement schedules.
           </p>
         </div>
 
@@ -88,91 +85,94 @@ export const AIDemandForecasting: React.FC = () => {
           </div>
 
           {/* 7-Day Predictive Consumption & Spot Price Graph */}
-          <div className="p-5 rounded-2xl bg-stone-50/90 border border-stone-200 space-y-4">
+          <div className="p-5 rounded-2xl bg-stone-50/80 border border-stone-200 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <span className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
                 <BarChart3 className="w-4 h-4 text-emerald-700" />
-                <span>7-Day Projected Institutional Demand (Surat Cluster)</span>
+                <span>7-Day Projected Institutional Demand &amp; Mandi Spot Price Curve</span>
               </span>
               <div className="flex items-center gap-3 text-[11px] font-medium text-stone-600">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600"></span> Recommended Window
+                  <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600"></span> Optimal Window
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-slate-400"></span> Projected Volume
+                  <span className="w-2.5 h-2.5 rounded-sm bg-stone-300"></span> Projected Volume
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Supply Deficit Risk
+                  <span className="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Shortage Risk
                 </span>
               </div>
             </div>
 
-            {/* Clean Modern Bar Chart Visualization */}
-            <div className="grid grid-cols-7 gap-2 sm:gap-3 items-end pt-5 pb-2 min-h-[140px]">
-              {forecast.weeklyTrend.map((point, idx) => {
-                const heightPercent = Math.max(18, Math.round((point.predictedDemandKg / maxDemand) * 100));
-                const isTargetDay = point.day.includes('Target') || idx === 3;
-                const isShortage = point.supplyStatus === 'Shortage Risk';
+            {/* Well-proportioned, clean analytics chart */}
+            <div className="max-w-2xl mx-auto py-2">
+              <div className="grid grid-cols-7 gap-2 sm:gap-3 items-end">
+                {forecast.weeklyTrend.map((point, idx) => {
+                  const heightPercent = Math.max(24, Math.round((point.predictedDemandKg / maxDemand) * 100));
+                  const isTargetDay = point.day.includes('Target') || idx === 3;
+                  const isShortage = point.supplyStatus === 'Shortage Risk';
 
-                return (
-                  <div key={idx} className="flex flex-col items-center gap-1.5 group">
-                    <span className={`text-[11px] font-mono font-bold ${isTargetDay ? 'text-emerald-700' : 'text-slate-700'}`}>
-                      ₹{point.predictedPrice.toFixed(0)}/kg
-                    </span>
-
-                    <div className="w-full bg-stone-200/70 rounded-xl h-28 flex items-end p-1 relative">
-                      <div
-                        className={`w-full rounded-lg transition-all duration-300 ${
-                          isTargetDay
-                            ? 'bg-emerald-600 shadow-sm'
-                            : isShortage
-                            ? 'bg-amber-500 hover:bg-amber-600'
-                            : 'bg-slate-400 hover:bg-slate-500'
-                        }`}
-                        style={{ height: `${heightPercent}%` }}
-                      ></div>
-
-                      {isTargetDay && (
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-700 text-white font-extrabold text-[8px] px-1.5 py-0.5 rounded font-mono shadow-xs uppercase tracking-wider whitespace-nowrap">
-                          Optimal Buy
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-center font-mono">
-                      <div className={`text-[11px] font-bold ${isTargetDay ? 'text-emerald-800' : 'text-slate-700'}`}>
-                        {point.day.split(' ')[0]}
+                  return (
+                    <div key={idx} className="flex flex-col items-center group">
+                      {/* Dedicated Top Badge Slot - Prevents ANY Overlap */}
+                      <div className="h-6 flex items-center justify-center mb-1">
+                        {isTargetDay ? (
+                          <span className="bg-emerald-700 text-white font-black text-[9px] px-2 py-0.5 rounded-full font-mono shadow-xs uppercase tracking-wider whitespace-nowrap">
+                            ★ Best Buy
+                          </span>
+                        ) : isShortage ? (
+                          <span className="text-[9px] font-bold text-amber-700 font-mono">
+                            High Rate
+                          </span>
+                        ) : (
+                          <span className="h-4" />
+                        )}
                       </div>
-                      <div className="text-[10px] text-stone-500">{point.predictedDemandKg} kg</div>
+
+                      {/* Mandi Price Tag */}
+                      <span
+                        className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-md whitespace-nowrap ${
+                          isTargetDay
+                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            : isShortage
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                            : 'bg-white text-slate-700 border border-stone-200'
+                        }`}
+                      >
+                        ₹{point.predictedPrice.toFixed(0)}/kg
+                      </span>
+
+                      {/* Proportional Column Bar */}
+                      <div className="w-10 sm:w-12 bg-stone-200/60 rounded-xl h-28 flex items-end p-1 my-2 border border-stone-300/70 shadow-2xs">
+                        <div
+                          className={`w-full rounded-lg transition-all duration-300 ${
+                            isTargetDay
+                              ? 'bg-emerald-600 shadow-xs'
+                              : isShortage
+                              ? 'bg-amber-500'
+                              : 'bg-stone-400/80 group-hover:bg-stone-500'
+                          }`}
+                          style={{ height: `${heightPercent}%` }}
+                        />
+                      </div>
+
+                      {/* Day and Volume Label */}
+                      <div className="text-center font-mono">
+                        <div
+                          className={`text-[11px] font-bold ${
+                            isTargetDay ? 'text-emerald-800' : 'text-slate-800'
+                          }`}
+                        >
+                          {point.day.split(' ')[0]}
+                        </div>
+                        <div className="text-[10px] text-stone-500">
+                          {point.predictedDemandKg} kg
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* AI Intelligence Insights Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            {/* Insight 1: Strategic Price Arbitrage */}
-            <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1.5">
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-xs">
-                <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>AI Market Recommendation</span>
+                  );
+                })}
               </div>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                {forecast.aiInsight}
-              </p>
-            </div>
-
-            {/* Insight 2: Cluster Supply Readiness */}
-            <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-1.5">
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-xs">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Cluster Supply Readiness</span>
-              </div>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                {forecast.clusterSupplySummary}
-              </p>
             </div>
           </div>
 

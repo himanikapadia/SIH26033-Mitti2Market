@@ -3,7 +3,7 @@ import { Crop, Farmer, LogisticsFleet } from '../types';
 export const BUYER_LOCATION = {
   lat: 21.1702,
   lng: 72.8311,
-  name: 'Surat APMC Central Bulk Terminal',
+  name: 'Buyer Delivery Terminal (Wholesaler / Retailer)',
   city: 'Surat',
   state: 'Gujarat'
 };
@@ -475,5 +475,5 @@ export const INITIAL_FLEET: LogisticsFleet = {
   reeferHumidityPercent: 88,
   fuelBatteryPercent: 84,
   estimatedDeliveryTime: '06:30 AM',
-  currentSegmentName: 'Standby at Surat APMC Bulk Terminal'
+  currentSegmentName: 'Standby at Buyer Delivery Terminal'
 };

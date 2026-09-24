@@ -117,31 +117,32 @@ export const PoolStatus: React.FC = () => {
 
         {/* Multi-Segmented Progress Bar */}
         <div className="w-full bg-stone-200 h-6 rounded-full overflow-hidden p-0.5 border border-stone-300 relative shadow-inner flex">
-          {poolContributors.map((c, i) => {
-            const widthPct = Math.max(2, (c.allocatedQty / targetKg) * 100);
-            let bgClass = 'bg-stone-300';
-            if (c.status === 'Accepted') bgClass = 'bg-gradient-to-r from-emerald-500 to-emerald-600';
-            else if (c.status === 'Pending') bgClass = 'bg-amber-400 animate-pulse';
-            else if (c.status === 'Rejected') bgClass = 'bg-rose-500 opacity-60';
-            else if (c.status === 'Standby') bgClass = 'bg-purple-500';
+          {poolContributors
+            .filter((c) => c.status !== 'Rejected')
+            .map((c, i) => {
+              const widthPct = Math.max(2, (c.allocatedQty / targetKg) * 100);
+              let bgClass = 'bg-stone-300';
+              if (c.status === 'Accepted') bgClass = 'bg-gradient-to-r from-emerald-500 to-emerald-600';
+              else if (c.status === 'Pending') bgClass = 'bg-amber-400 animate-pulse';
+              else if (c.status === 'Standby') bgClass = 'bg-purple-500';
 
-            return (
-              <div
-                key={i}
-                style={{ width: `${widthPct}%` }}
-                title={`${c.farmerName}: ${c.allocatedQty} kg (${c.status})`}
-                className={`h-full ${bgClass} border-r border-white/40 first:rounded-l-full last:rounded-r-full transition-all duration-500 relative group overflow-hidden flex items-center justify-center text-[10px] font-bold text-white shadow-2xs`}
-              >
-                {/* Shimmer sweep over confirmed segments */}
-                {c.status === 'Accepted' && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
-                )}
-                {widthPct >= 12 && (
-                  <span className="truncate px-1 drop-shadow-xs">{c.allocatedQty}kg</span>
-                )}
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={i}
+                  style={{ width: `${widthPct}%` }}
+                  title={`${c.farmerName}: ${c.allocatedQty} kg (${c.status})`}
+                  className={`h-full ${bgClass} border-r border-white/40 first:rounded-l-full last:rounded-r-full transition-all duration-500 relative group overflow-hidden flex items-center justify-center text-[10px] font-bold text-white shadow-2xs`}
+                >
+                  {/* Shimmer sweep over confirmed segments */}
+                  {c.status === 'Accepted' && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                  )}
+                  {widthPct >= 12 && (
+                    <span className="truncate px-1 drop-shadow-xs">{c.allocatedQty}kg</span>
+                  )}
+                </div>
+              );
+            })}
         </div>
 
         {/* Farmer Quota Breakdown Chips below bar */}
@@ -168,12 +169,25 @@ export const PoolStatus: React.FC = () => {
                 <span>{c.farmerName.split(' ')[0]} ({c.allocatedQty} kg)</span>
                 {c.status === 'Accepted' && <span>✓</span>}
                 {c.status === 'Pending' && <span>⏳</span>}
-                {c.status === 'Rejected' && <span>✕</span>}
+                {c.status === 'Rejected' && <span>✕ (Rejected)</span>}
               </span>
             );
           })}
         </div>
       </div>
+
+      {/* Dynamic Standby Re-Allocation Alert */}
+      {poolContributors.some((c) => c.status === 'Rejected') && (
+        <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 flex items-start gap-3 text-xs text-rose-900 animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-extrabold text-rose-950">Dynamic Standby Re-Allocation Active:</span>
+            <p className="text-[11px] text-rose-800 leading-relaxed">
+              A farmer declined or terminated the offer call. Mitti2Market's Knapsack pooling engine automatically engaged a pre-screened standby backup farmer from the adjacent village cluster to maintain 100% fulfillment.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Farmer Pool Table */}
       <div className="space-y-3">
@@ -212,19 +226,32 @@ export const PoolStatus: React.FC = () => {
                 };
 
                 return (
-                  <tr key={idx} className="hover:bg-stone-50/80 transition">
+                  <tr key={idx} className={`transition ${c.status === 'Rejected' ? 'bg-rose-50/40' : 'hover:bg-stone-50/80'}`}>
                     <td className="py-3 px-4 font-semibold text-slate-900">
                       <div className="flex items-center gap-2">
-                        <span>{c.farmerName}</span>
+                        <span className={c.status === 'Rejected' ? 'line-through text-stone-400 font-normal' : ''}>
+                          {c.farmerName}
+                        </span>
                         {c.isStandbyBackup && (
                           <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 border border-purple-300">
                             Standby Backup
+                          </span>
+                        )}
+                        {c.status === 'Rejected' && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300">
+                            Declined
                           </span>
                         )}
                       </div>
                       <div className="text-[10px] text-stone-400 font-normal">
                         {c.phoneType} • {c.preferredLanguage}
                       </div>
+                      {c.status === 'Rejected' && (
+                        <div className="text-[10px] text-rose-600 font-semibold flex items-center gap-1 mt-0.5">
+                          <XCircle className="w-3 h-3 text-rose-500 shrink-0" />
+                          <span>{c.rejectionReason || 'Call cut / Declined by farmer'}</span>
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 px-3 text-stone-600 font-medium">{c.village}</td>
                     <td className="py-3 px-3">
@@ -271,6 +298,11 @@ export const PoolStatus: React.FC = () => {
                               <span>Reject</span>
                             </button>
                           </>
+                        )}
+                        {c.status === 'Rejected' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-bold border border-rose-200">
+                            Replaced by Standby
+                          </span>
                         )}
                         {c.status === 'Standby' && (
                           <button

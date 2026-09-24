@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { FarmerProfile } from './FarmerProfile';
+import { FarmerDailyHarvestPost } from './FarmerDailyHarvestPost';
 import { FarmerNetwork } from './FarmerNetwork';
 import { SmartphoneSimulator } from './SmartphoneSimulator';
 import { KeypadPhoneSimulator } from './KeypadPhoneSimulator';
@@ -43,159 +44,134 @@ export const FarmerModule: React.FC = () => {
         </div>
       </div>
 
-      {/* 4-Step Interactive Storytelling Lifecycle Bar */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-5 shadow-xs space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-2.5">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
-              Procurement Lifecycle Storytelling:
-            </span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-              Demand-to-Consolidation
-            </span>
-          </div>
-          <div className="text-xs font-mono font-bold text-emerald-800">
-            Active Pool: {acceptedKg} of {targetKg} kg Confirmed ({progressPercent}%)
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          {/* Step 1 */}
-          <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col justify-between space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-stone-400 uppercase">Step 1</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Done ✓</span>
-            </div>
-            <div className="font-extrabold text-slate-900">Buyer Posts Demand</div>
-            <div className="text-[11px] text-stone-500">1,000 kg Tomato requisition posted</div>
-          </div>
-
-          {/* Step 2 */}
-          <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200 flex flex-col justify-between space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-amber-700 uppercase">Step 2</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
-                Active
-              </span>
-            </div>
-            <div className="font-extrabold text-amber-950">Farmers Receive Alerts</div>
-            <div className="text-[11px] text-amber-800">Push App Alert or Hindi Voice Call (IVR)</div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="p-3 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col justify-between space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-blue-700 uppercase">Step 3</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-blue-800">Simulate Below</span>
-            </div>
-            <div className="font-extrabold text-blue-950">Farmer Consent Decision</div>
-            <div className="text-[11px] text-blue-800">Press Accept / Reject / Counter on Device</div>
-          </div>
-
-          {/* Step 4 */}
-          <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex flex-col justify-between space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-emerald-700 uppercase">Step 4</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Real-Time</span>
-            </div>
-            <div className="font-extrabold text-emerald-950">Buyer Pool Updates</div>
-            <div className="text-[11px] text-emerald-800">Order consolidates into unified B2B invoice</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Grid: Left Profile (4 Cols) + Right Network & Simulator (8 Cols) */}
+      {/* Dual Frameset: Left Live Farmer Portal vs Right Evaluator Sandbox */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Selected Farmer Profile */}
-        <div className="lg:col-span-5 space-y-6">
-          <FarmerProfile />
-        </div>
-
-        {/* Right: Two-part Network + Simulator */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* Top: 15 Farmers Network */}
-          <FarmerNetwork />
-
-          {/* Evaluator Explainer: Digital Divide & 2 Device Types */}
-          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 border-2 border-emerald-300/80 p-4 sm:p-5 rounded-3xl shadow-xs space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-emerald-950 font-black text-xs sm:text-sm">
-                <span className="text-base">🇮🇳</span>
-                <span>Evaluator Note: Why We Built Both Smartphone &amp; Keypad Simulators</span>
+        {/* Left Frame: Live Farmer Portal Window */}
+        <div className="lg:col-span-6 rounded-3xl border-[3px] border-emerald-500 bg-emerald-50/20 shadow-lg overflow-hidden flex flex-col">
+          {/* Top Window Title Bar */}
+          <div className="bg-emerald-900 text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-emerald-600">
+            <div className="flex items-center gap-2.5">
+              <div className="flex gap-1.5 mr-1">
+                <span className="w-3 h-3 rounded-full bg-rose-400 inline-block shadow-xs"></span>
+                <span className="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-xs"></span>
+                <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block shadow-xs"></span>
               </div>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-200/60 text-emerald-900 border border-emerald-300">
-                100% Rural Inclusion
+              <span className="font-extrabold text-xs sm:text-sm tracking-wide text-white uppercase flex items-center gap-1.5">
+                <span>🌾 LIVE FARMER PORTAL</span>
               </span>
             </div>
-
-            <p className="text-xs text-stone-700 leading-relaxed">
-              Over <strong>55% of Indian smallholder farmers</strong> rely on basic 2G feature phones without internet access. To eliminate the digital divide, Mitti2Market provides two complementary channels:
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-xs">
-              <div className="p-3 rounded-2xl bg-white border border-emerald-200/80 space-y-1 shadow-2xs">
-                <div className="flex items-center gap-1.5 font-extrabold text-blue-900">
-                  <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-                  <span>1. Smartphone (e.g. Ramesh Patel)</span>
-                </div>
-                <p className="text-[11px] text-stone-600 leading-snug">
-                  Rich mobile app interface for smartphone farmers with push alerts, digital Agmark certificates, and UPI transaction receipts.
-                </p>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-white border border-amber-200/80 space-y-1 shadow-2xs">
-                <div className="flex items-center gap-1.5 font-extrabold text-amber-900">
-                  <PhoneCall className="w-3.5 h-3.5 text-amber-600" />
-                  <span>2. Keypad Phone (e.g. Mahesh Patel)</span>
-                </div>
-                <p className="text-[11px] text-stone-600 leading-snug">
-                  Zero-internet voice IVR call in pure vernacular Hindi/Gujarati with simple DTMF keypad presses (<strong>1 to Accept</strong>, <strong>2 to Reject</strong>).
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-800 bg-white/90 px-3 py-1.5 rounded-xl border border-emerald-200">
-              <span>👉 <strong>Evaluator Action:</strong> Select <strong>Ramesh Patel</strong> or <strong>Mahesh Patel</strong> in the network table above to inspect both devices!</span>
-            </div>
+            <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-800 text-emerald-200 border border-emerald-500 uppercase tracking-wider">
+              Farmer Live Screen
+            </span>
           </div>
 
-          {/* Bottom: Simulated Device Container */}
-          <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <div>
-                <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Device Simulator:</span>
-                  <span className="text-emerald-700">{farmer.name} ({farmer.village})</span>
-                </h3>
-                <p className="text-xs text-stone-500">
-                  {farmer.phoneType === 'SMARTPHONE'
-                    ? 'Smartphone App Interface (Modern Push Alert)'
-                    : 'Retro Keypad Phone with Vernacular IVR Dialing'}
-                </p>
+          {/* Window Body */}
+          <div className="p-4 sm:p-6 space-y-6">
+            <FarmerProfile />
+            <FarmerDailyHarvestPost />
+          </div>
+        </div>
+
+        {/* Right Frame: Evaluator Sandbox & Device Simulator Window */}
+        <div className="lg:col-span-6 rounded-3xl border-[3px] border-amber-500 bg-amber-50/20 shadow-lg overflow-hidden flex flex-col">
+          {/* Top Window Title Bar */}
+          <div className="bg-stone-900 text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-amber-600">
+            <div className="flex items-center gap-2.5">
+              <div className="flex gap-1.5 mr-1">
+                <span className="w-3 h-3 rounded-full bg-rose-400 inline-block shadow-xs"></span>
+                <span className="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-xs"></span>
+                <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block shadow-xs"></span>
+              </div>
+              <span className="font-extrabold text-xs sm:text-sm tracking-wide text-amber-300 uppercase flex items-center gap-1.5">
+                <span>🧪 EVALUATOR SANDBOX &amp; DEVICE SIMULATOR</span>
+              </span>
+            </div>
+            <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-200 border border-amber-600 uppercase tracking-wider">
+              Demo Simulation Lab
+            </span>
+          </div>
+
+          {/* Window Body */}
+          <div className="p-4 sm:p-6 space-y-6">
+            {/* 15 Farmers Network */}
+            <FarmerNetwork />
+
+            {/* Concise, Highly-Readable Evaluator Note */}
+            <div className="p-4 rounded-2xl bg-amber-50/90 border-2 border-amber-300 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-amber-950 font-black text-xs sm:text-sm">
+                  <span>🇮🇳</span>
+                  <span>Rural Inclusion Simulator Guide</span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+                  Dual Mode Testing
+                </span>
               </div>
 
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-100 text-xs font-bold text-slate-700">
-                {farmer.phoneType === 'SMARTPHONE' ? (
-                  <>
+              <p className="text-xs text-stone-700 leading-relaxed font-medium">
+                Over 55% of Indian smallholders rely on basic 2G feature phones. Mitti2Market supports both modern smartphones and vernacular IVR audio calls:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                <div className="p-2.5 rounded-xl bg-white border border-blue-200 space-y-1 shadow-2xs">
+                  <div className="flex items-center gap-1.5 font-extrabold text-blue-900">
                     <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Smartphone</span>
-                  </>
-                ) : (
-                  <>
+                    <span>Smartphone App</span>
+                  </div>
+                  <p className="text-[11px] text-stone-600 leading-snug">
+                    Select <strong>Ramesh Patel</strong> above to inspect push alert, Agmark cert, and UPI payout.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white border border-amber-200 space-y-1 shadow-2xs">
+                  <div className="flex items-center gap-1.5 font-extrabold text-amber-950">
                     <PhoneCall className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Feature Phone</span>
-                  </>
-                )}
+                    <span>2G Keypad IVR Call</span>
+                  </div>
+                  <p className="text-[11px] text-stone-600 leading-snug">
+                    Select <strong>Mahesh Patel</strong> above to test vernacular Hindi/Gujarati voice call (1 Accept / 2 Reject).
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Render appropriate simulator */}
-            {farmer.phoneType === 'SMARTPHONE' ? (
-              <SmartphoneSimulator />
-            ) : (
-              <KeypadPhoneSimulator />
-            )}
+            {/* Simulated Device Container */}
+            <div className="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                    <span>Device Simulator:</span>
+                    <span className="text-emerald-700">{farmer.name} ({farmer.village})</span>
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    {farmer.phoneType === 'SMARTPHONE'
+                      ? 'Smartphone App Interface (Modern Push Alert)'
+                      : 'Retro Keypad Phone with Vernacular IVR Dialing'}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-100 text-xs font-bold text-slate-700">
+                  {farmer.phoneType === 'SMARTPHONE' ? (
+                    <>
+                      <Smartphone className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Smartphone</span>
+                    </>
+                  ) : (
+                    <>
+                      <PhoneCall className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Feature Phone</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Render appropriate simulator */}
+              {farmer.phoneType === 'SMARTPHONE' ? (
+                <SmartphoneSimulator />
+              ) : (
+                <KeypadPhoneSimulator />
+              )}
+            </div>
           </div>
         </div>
       </div>

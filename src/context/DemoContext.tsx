@@ -82,6 +82,7 @@ interface DemoContextType {
     acceptExtra10Percent: boolean;
     pickupWindow: string;
     deliveryRequiredBy: string;
+    deliveryDate?: string;
     buyerName?: string;
   }) => void;
 
@@ -315,12 +316,14 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     acceptExtra10Percent,
     pickupWindow,
     deliveryRequiredBy,
+    deliveryDate = 'Tomorrow 4:00 AM',
     buyerName = 'Nature Fresh Supermarkets Ltd'
   }: {
     crops: { cropId: string; quantity: number }[];
     acceptExtra10Percent: boolean;
     pickupWindow: string;
     deliveryRequiredBy: string;
+    deliveryDate?: string;
     buyerName?: string;
   }) => {
     const demandCrops = selectedCropsList.map((sc) => {
@@ -343,7 +346,7 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       acceptExtra10Percent,
       pickupWindow,
       deliveryRequiredBy,
-      deliveryDate: 'Today / Early Morning',
+      deliveryDate,
       postedAt: new Date().toLocaleTimeString(),
       targetTotalKg: totalTarget
     };
@@ -518,8 +521,21 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map((f) => (f.id === farmerId ? { ...f, status: 'Rejected' } : f))
     );
 
+    // Keep rejected farmer visible in poolContributors with status 'Rejected' and reason
+    setPoolContributors((prev) =>
+      prev.map((c) =>
+        c.farmerId === farmerId
+          ? {
+              ...c,
+              status: 'Rejected' as const,
+              rejectionReason: reason
+            }
+          : c
+      )
+    );
+
     addLog(`${farmerName} REJECTED demand. Reason: "${reason}".`, 'FARMER', 'error');
-    addToast(`${farmerName} rejected the demand.`, 'error');
+    addToast(`${farmerName} rejected the demand (${reason}).`, 'error');
 
     // Trigger Standby Replacement
     addLog(`${rejectedKg} kg shortage detected in pool.`, 'STANDBY', 'warning');
@@ -547,28 +563,27 @@ export const DemoProvider: React.FC<{ children: React.ReactNode }> = ({ children
           )
         );
 
-        // Replace row in pool
-        const updatedPool: PoolContributor[] = poolContributors.map((c) => {
-          if (c.farmerId === farmerId) {
-            return {
-              farmerId: standby.id,
-              farmerName: `${standby.name} (Standby Backup)`,
-              village: standby.village,
-              crop: c.crop,
-              availableQty: standby.todayAvailableQty,
-              allocatedQty: rejectedKg,
-              offeredRate: standby.offeredRate,
-              status: 'Pending' as const,
-              phoneType: standby.phoneType,
-              preferredLanguage: standby.preferredLanguage,
-              isStandbyBackup: true,
-              rejectionReason: reason
-            };
-          }
-          return c;
-        });
+        // Append standby farmer as a new Pending contributor (retains rejected farmer row)
+        const standbyContributor: PoolContributor = {
+          farmerId: standby.id,
+          farmerName: `${standby.name} (Standby Backup)`,
+          village: standby.village,
+          crop: rejectedContrib?.crop || 'Tomato',
+          availableQty: standby.todayAvailableQty,
+          allocatedQty: rejectedKg,
+          offeredRate: standby.offeredRate,
+          status: 'Pending' as const,
+          phoneType: standby.phoneType,
+          preferredLanguage: standby.preferredLanguage,
+          isStandbyBackup: true
+        };
 
-        setPoolContributors(updatedPool);
+        setPoolContributors((prev) => {
+          if (prev.some((c) => c.farmerId === standby.id)) {
+            return prev.map((c) => (c.farmerId === standby.id ? standbyContributor : c));
+          }
+          return [...prev, standbyContributor];
+        });
 
         // Select standby farmer so their device opens in farmer module
         setSelectedFarmerId(standby.id);

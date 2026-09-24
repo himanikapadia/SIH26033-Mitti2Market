@@ -292,12 +292,12 @@ export const LeafletMap: React.FC<{
         {/* Buyer Hub Marker */}
         <Marker
           position={[BUYER_LOCATION.lat, BUYER_LOCATION.lng]}
-          icon={createMarkerIcon('buyer', undefined, 'Surat APMC (Buyer)')}
+          icon={createMarkerIcon('buyer', undefined, 'Buyer Hub (Wholesaler / Retailer)')}
         >
           <Popup>
             <div className="text-xs">
               <div className="font-extrabold text-purple-900">{BUYER_LOCATION.name}</div>
-              <div className="text-stone-500">Consolidated Demand Destination</div>
+              <div className="text-stone-500">Destination: Buyer Terminal / Warehouse (Wholesaler / Retailer)</div>
             </div>
           </Popup>
         </Marker>

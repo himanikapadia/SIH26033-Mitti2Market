@@ -130,7 +130,12 @@ export const KeypadPhoneSimulator: React.FC = () => {
       setCallState('ENDED');
     } else if (key === '2') {
       // 2: अस्वीकार
-      farmerReject(farmer.id, 'ध्वनि कॉल के माध्यम से किसान द्वारा प्रस्ताव अस्वीकृत');
+      farmerReject(
+        farmer.id,
+        isGujarati
+          ? 'બટન ૨ દબાવી અસ્વીકાર કર્યો (કૉલ કટ)'
+          : 'बटन २ दबाकर प्रस्ताव अस्वीकृत किया (कॉल कट)'
+      );
       setCallState('ENDED');
     } else if (key === '3') {
       // 3: नया भाव
